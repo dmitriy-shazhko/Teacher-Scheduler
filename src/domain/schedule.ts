@@ -41,3 +41,15 @@ export function formatDuration(minutes: number): string {
 
     return m === 0 ? `${h} ч` : `${h} ч ${m} мин`;
 }
+
+export function getNextLessonOfDay(lessons: Lesson[], current: Lesson): Lesson | null {
+    const currentStart = toMinutes(current.startTime);
+
+    const candidates = lessons
+        .filter(
+            (l) => l.date === current.date && !l.cancelled && toMinutes(l.startTime) > currentStart,
+        )
+        .sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime));
+
+    return candidates[0] ?? null;
+}

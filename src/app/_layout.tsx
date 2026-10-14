@@ -1,5 +1,5 @@
 import { migrateDb } from '@/db/migrate';
-import { initNotifications } from '@/notifications/channels';
+import { initNotifications } from '@/notifications/init';
 import * as Notifications from 'expo-notifications';
 import { Stack } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';

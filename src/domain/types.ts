@@ -20,3 +20,14 @@ export interface CurrentAndNextLessons {
     minutesLeft: number | null;
     minutesToNext: number | null;
 }
+
+export type StatusKind = 'upcoming' | 'current' | 'ending';
+
+export type StatusStep = {
+    id: string;
+    kind: StatusKind;
+    lesson: Lesson;
+    next: Lesson | null;
+    showAt: Date;
+    hideAt: Date;
+};

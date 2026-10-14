@@ -7,6 +7,7 @@ import {
     updateLesson,
 } from '@/db/lessons';
 import { Lesson } from '@/domain/types';
+import { syncNotifications } from '@/notifications/scheduler';
 import { SQLiteDatabase } from 'expo-sqlite';
 import { create } from 'zustand';
 
@@ -26,6 +27,7 @@ export const useLessonStore = create<State>((set, get) => {
         const { weekStart } = get();
         if (weekStart) await get().loadWeek(db, weekStart);
         await get().loadToday(db);
+        syncNotifications(db).catch((e) => console.warn('syncNotifications failed', e));
     };
 
     return {

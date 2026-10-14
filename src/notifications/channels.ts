@@ -1,29 +1,27 @@
-import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { ensureNotificationPermission } from './permissions';
+import notifee, { AndroidImportance, AndroidVisibility } from 'react-native-notify-kit';
 
 export const CHANNELS = {
-    endingSoon: 'ending-soon-v1',
-    nextLesson: 'next-lesson',
+    status: 'status-v1',
+    endingSoon: 'ending-soon-v3',
 } as const;
 
 export async function setupChannels() {
     if (Platform.OS !== 'android') return;
 
-    await Notifications.setNotificationChannelAsync(CHANNELS.endingSoon, {
+    await notifee.createChannel({
+        id: CHANNELS.status,
+        name: 'Расписание',
+        importance: AndroidImportance.LOW,
+        visibility: AndroidVisibility.PUBLIC,
+    });
+
+    await notifee.createChannel({
+        id: CHANNELS.endingSoon,
         name: 'Скоро конец урока',
-        importance: Notifications.AndroidImportance.HIGH,
-        vibrationPattern: [0, 400, 200, 400, 200, 400],
-        enableVibrate: true,
+        importance: AndroidImportance.HIGH,
+        vibration: true,
+        vibrationPattern: [400, 200, 400, 200, 400, 200],
+        visibility: AndroidVisibility.PUBLIC,
     });
-
-    await Notifications.setNotificationChannelAsync(CHANNELS.nextLesson, {
-        name: 'Следующий урок',
-        importance: Notifications.AndroidImportance.HIGH,
-    });
-}
-
-export async function initNotifications() {
-    await setupChannels();
-    await ensureNotificationPermission();
 }

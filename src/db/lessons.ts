@@ -46,6 +46,19 @@ export async function getLessonsForWeek(db: SQLiteDatabase, monday: Date): Promi
     return rows.map(rowToLesson);
 }
 
+export async function getLessonsForRange(
+    db: SQLiteDatabase,
+    from: Date,
+    to: Date,
+): Promise<Lesson[]> {
+    const rows = await db.getAllAsync<LessonRow>(
+        'SELECT * FROM lessons WHERE date >= ? AND date <= ? ORDER BY date, start_time',
+        [toDateString(from), toDateString(to)],
+    );
+
+    return rows.map(rowToLesson);
+}
+
 export async function countLessonsForWeek(db: SQLiteDatabase, monday: Date): Promise<number> {
     const row = await db.getFirstAsync<{ n: number }>(
         'SELECT COUNT(*) AS n FROM lessons WHERE date >= ? AND date <= ?',

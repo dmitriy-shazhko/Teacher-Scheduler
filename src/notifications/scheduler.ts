@@ -12,7 +12,7 @@ import {
 } from '@/domain/notificationTexts';
 import { buildStatusTimeline } from '@/domain/statusTimeline';
 
-import { LESSON_ENDING_MINUTES, SCHEDULER_WINDOW_DAYS } from '@/domain/constants';
+import { SCHEDULER_WINDOW_DAYS } from '@/domain/constants';
 import { StatusStep } from '@/domain/types';
 import { CHANNELS } from './channels';
 
@@ -20,7 +20,7 @@ let lastSync: Promise<void> = Promise.resolve();
 
 function textFor(step: StatusStep): NotificationText {
     if (step.kind === 'current') return buildCurrentLessonText(step.lesson);
-    if (step.kind === 'ending') return buildEndingText(LESSON_ENDING_MINUTES);
+    if (step.kind === 'ending') return buildEndingText(step.lesson.endTime);
 
     return buildNextLessonText(step.lesson)!;
 }

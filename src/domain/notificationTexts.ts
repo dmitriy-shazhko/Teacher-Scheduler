@@ -16,10 +16,10 @@ function lessonHeadline(lesson: Lesson): string {
     return `${lesson.startTime}-${lesson.endTime}, ${lesson.className}${room}`;
 }
 
-export function buildEndingText(minutesLeft: number): NotificationText {
+export function buildEndingText(endTime: string): NotificationText {
     return {
         title: 'Скоро конец урока',
-        body: `Через ${minutesLeft} мин. конец урока`,
+        body: `Урок заканчивается в ${endTime}`,
     };
 }
 

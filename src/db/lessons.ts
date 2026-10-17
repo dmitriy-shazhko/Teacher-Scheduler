@@ -89,7 +89,7 @@ export async function deleteLesson(db: SQLiteDatabase, id: number): Promise<void
 }
 
 // копирует уроки из недели sourceMonday в неделю targetMonday
-// темы не копируются, отменённые уроки пропускаются
+// отменённые уроки пропускаются
 export async function copyWeek(
     db: SQLiteDatabase,
     sourceMonday: Date,

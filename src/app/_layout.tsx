@@ -1,5 +1,6 @@
 import { migrateDb } from '@/db/migrate';
 import { initNotifications } from '@/notifications/init';
+import { useSettingsStore } from '@/store/settingsStore';
 import * as Notifications from 'expo-notifications';
 import { Stack } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
@@ -21,6 +22,7 @@ export const unstable_settings = {
 export default function RootLayout() {
     useEffect(() => {
         initNotifications();
+        useSettingsStore.getState().loadSettings();
     }, []);
 
     return (

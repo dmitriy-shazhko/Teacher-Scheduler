@@ -31,3 +31,9 @@ export type StatusStep = {
     showAt: Date;
     hideAt: Date;
 };
+
+export interface AppSettings {
+    firstLessonStartingMinutes: number; // за сколько минут до первого урока дня показывать «Следующий урок»
+    lessonEndingMinutes: number; // за сколько минут до конца урока показывать «Скоро конец урока»
+    lessonDurationMinutes: number; // длительность урока для автоподстановки
+}

@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import notifee, { AndroidImportance, AndroidVisibility } from 'react-native-notify-kit';
 
 export const CHANNELS = {
-    status: 'status-v1',
+    status: 'status-v2',
     endingSoon: 'ending-soon-v3',
 } as const;
 
@@ -12,7 +12,7 @@ export async function setupChannels() {
     await notifee.createChannel({
         id: CHANNELS.status,
         name: 'Расписание',
-        importance: AndroidImportance.LOW,
+        importance: AndroidImportance.HIGH,
         visibility: AndroidVisibility.PUBLIC,
     });
 

@@ -456,6 +456,7 @@ CREATE INDEX idx_lessons_date ON lessons(date);
 
 ```bash
 npm install                          # зависимости
+APP_VARIANT=development npx expo start -c --dev-client # запуск dev версии приложения
 npx expo start --dev-client          # dev-сервер для установленного development build
 npx expo start --dev-client -c       # то же с очисткой кэша (после новых маршрутов)
 npx expo start --tunnel              # если Wi-Fi мешает подключению телефона
@@ -466,6 +467,7 @@ npx expo-doctor                      # диагностика проекта
 eas build --profile development --platform android   # пересборка dev-клиента (после нативных пакетов)
 eas build:list                       # история сборок
 npx tsc --noEmit                     # проверка типов TypeScript
+
 ```
 
 Телефон и компьютер должны быть в одной Wi-Fi сети. Для установленных нативных пакетов нужна пересборка dev-клиента, для JS-кода нет. Текущий checkout находится на ветке `main`; план B4.1 описывает оставшиеся проверки реализации уведомлений.

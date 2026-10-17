@@ -1,6 +1,5 @@
 import { LessonCard } from '@/components/LessonCard';
 import { NowCard } from '@/components/NowCard';
-import { REFRESH_LESSONS_MS } from '@/domain/constants';
 import { formatDateRu, toDateString } from '@/domain/dates';
 import { formatDuration, getCurrentAndNextLessons, lessonIsPassed } from '@/domain/schedule';
 import { useLessonStore } from '@/store/lessonsStore';
@@ -57,16 +56,27 @@ export default function TodayScreen() {
 
     useFocusEffect(
         useCallback(() => {
-            const tick = () => {
-                setNow(new Date());
-                loadToday(db);
-            };
+            loadToday(db);
 
-            tick();
+            let day = toDateString(new Date());
 
-            const timer = setInterval(tick, REFRESH_LESSONS_MS);
+            const clock = setInterval(() => {
+                const current = new Date();
 
-            return () => clearInterval(timer);
+                setNow((prev) =>
+                    Math.floor(current.getTime() / 60_000) === Math.floor(prev.getTime() / 60_000)
+                        ? prev
+                        : current,
+                );
+
+                const today = toDateString(current);
+                if (today !== day) {
+                    day = today;
+                    loadToday(db);
+                }
+            }, 1000);
+
+            return () => clearInterval(clock);
         }, [db, loadToday]),
     );
 

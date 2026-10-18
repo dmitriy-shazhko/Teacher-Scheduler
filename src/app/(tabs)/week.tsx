@@ -1,5 +1,6 @@
 import { CopyLessonsModal } from '@/components/CopyLessonsModal';
 import { DayCard } from '@/components/DayCard';
+import { Screen } from '@/components/Screen';
 import { countLessonsForWeek } from '@/db/lessons';
 import { WEEKDAYS } from '@/domain/constants';
 import { addDays, formatWeek, startOfWeek, toDateString } from '@/domain/dates';
@@ -64,9 +65,7 @@ export default function WeekScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Неделя</Text>
-
+        <Screen title='Неделя'>
             <View style={styles.weekSwitcher}>
                 <Pressable onPress={() => shiftWeek(-1)} hitSlop={12}>
                     <Text style={styles.arrow}>‹</Text>
@@ -103,12 +102,11 @@ export default function WeekScreen() {
                 onClose={() => setCopyOpen(false)}
                 pickSource={pickSource}
             />
-        </View>
+        </Screen>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, paddingTop: 60 },
     title: { fontSize: 28, fontWeight: 'bold', marginBottom: 12 },
     weekSwitcher: {
         flexDirection: 'row',

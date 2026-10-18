@@ -1,5 +1,6 @@
 import { LessonCard } from '@/components/LessonCard';
 import { NowCard } from '@/components/NowCard';
+import { Screen } from '@/components/Screen';
 import { formatDateRu, toDateString } from '@/domain/dates';
 import { formatDuration, getCurrentAndNextLessons, lessonIsPassed } from '@/domain/schedule';
 import { useLessonStore } from '@/store/lessonsStore';
@@ -81,8 +82,7 @@ export default function TodayScreen() {
     );
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Сегодня</Text>
+        <Screen title='Сегодня'>
             <Text style={styles.date}>{formatDateRu(toDateString(now))}</Text>
 
             {lessons.length === 0 ? (
@@ -98,16 +98,11 @@ export default function TodayScreen() {
                     ListHeaderComponent={header}
                 />
             )}
-        </View>
+        </Screen>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        paddingTop: 60,
-    },
     title: {
         fontSize: 28,
         fontWeight: 'bold',

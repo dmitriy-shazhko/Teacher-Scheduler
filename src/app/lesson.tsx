@@ -1,7 +1,15 @@
 import { PickerField } from '@/components/PickerField';
 import { getLessonById } from '@/db/lessons';
-import { dateToTime, formatDateRu, parseDate, timeToDate, toDateString } from '@/domain/dates';
+import {
+    addMinutesToTime,
+    dateToTime,
+    formatDateRu,
+    parseDate,
+    timeToDate,
+    toDateString,
+} from '@/domain/dates';
 import { useLessonStore } from '@/store/lessonsStore';
+import { useSettingsStore } from '@/store/settingsStore';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
@@ -19,12 +27,13 @@ import {
 export default function LessonFormScreen() {
     const db = useSQLiteContext();
     const saveLesson = useLessonStore((s) => s.saveLesson);
+    const lessonDuration = useSettingsStore((s) => s.settings.lessonDurationMinutes);
     const { id, date } = useLocalSearchParams<{ id?: string; date?: string }>();
     const isEdit = id !== undefined;
 
     const [lessonDate, setLessonDate] = useState(date ?? toDateString(new Date()));
     const [startTime, setStartTime] = useState('08:30');
-    const [endTime, setEndTime] = useState('09:15');
+    const [endTime, setEndTime] = useState(() => addMinutesToTime('08:30', lessonDuration));
     const [className, setClassName] = useState('');
     const [room, setRoom] = useState('');
     const [topic, setTopic] = useState('');
@@ -98,7 +107,11 @@ export default function LessonFormScreen() {
                         mode='time'
                         value={timeToDate(startTime)}
                         display={startTime}
-                        onChange={(d) => setStartTime(dateToTime(d))}
+                        onChange={(d) => {
+                            const start = dateToTime(d);
+                            setStartTime(start);
+                            setEndTime(addMinutesToTime(start, lessonDuration));
+                        }}
                     />
                 </View>
                 <View style={styles.flex}>

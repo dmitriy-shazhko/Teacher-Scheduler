@@ -21,7 +21,7 @@ export default function WeekScreen() {
     const [copyOpen, setCopyOpen] = useState(false);
     const [sources, setSources] = useState<CopyLessonsSource[]>([]);
 
-    const load = useCallback(() => loadWeek(db, weekStart), [db, weekStart]);
+    const load = useCallback(() => loadWeek(db, weekStart), [db, weekStart, loadWeek]);
 
     useFocusEffect(
         useCallback(() => {
@@ -107,7 +107,6 @@ export default function WeekScreen() {
 }
 
 const styles = StyleSheet.create({
-    title: { fontSize: 28, fontWeight: 'bold', marginBottom: 12 },
     weekSwitcher: {
         flexDirection: 'row',
         alignItems: 'center',

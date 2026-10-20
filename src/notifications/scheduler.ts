@@ -1,4 +1,3 @@
-import * as ExpoNotifications from 'expo-notifications';
 import { SQLiteDatabase } from 'expo-sqlite';
 import notifee, { AndroidVisibility, TimestampTrigger, TriggerType } from 'react-native-notify-kit';
 
@@ -12,6 +11,7 @@ import {
 } from '@/domain/notificationTexts';
 import { buildStatusTimeline } from '@/domain/statusTimeline';
 
+import { loadSettings } from '@/db/settings';
 import { SCHEDULER_WINDOW_DAYS } from '@/domain/constants';
 import { StatusStep } from '@/domain/types';
 import { CHANNELS } from './channels';
@@ -53,15 +53,13 @@ function toNotification(step: StatusStep, timeoutMs: number) {
 }
 
 async function doSync(db: SQLiteDatabase): Promise<void> {
-    // Один раз убираем то, что поставила прежняя схема на expo-notifications
-    await ExpoNotifications.cancelAllScheduledNotificationsAsync();
-
     // Все ещё не показанные триггеры пересобираем с нуля
     await notifee.cancelTriggerNotifications();
 
     const now = new Date();
+    const settings = await loadSettings();
     const lessons = await getLessonsForRange(db, now, addDays(now, SCHEDULER_WINDOW_DAYS));
-    const steps = buildStatusTimeline(lessons, now);
+    const steps = buildStatusTimeline(lessons, now, settings);
 
     const running = steps.filter((s) => s.showAt <= now);
     const future = steps.filter((s) => s.showAt > now);
@@ -80,7 +78,7 @@ async function doSync(db: SQLiteDatabase): Promise<void> {
             toNotification(step, step.hideAt.getTime() - now.getTime()),
         );
     }
-
+    console.log(future);
     // Будущие состояния: каждое срабатывает по таймеру системы и само исчезает к следующему
     for (const step of future) {
         const trigger: TimestampTrigger = {

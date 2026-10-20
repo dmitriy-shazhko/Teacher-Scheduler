@@ -50,7 +50,7 @@ export default function TodayScreen() {
                 />
             )}
             {!current && !next && lessons.length > 0 && (
-                <Text style={styles.done}>Уроков сегодня больше нет</Text>
+                <Text style={styles.empty}>Уроков сегодня больше нет</Text>
             )}
         </View>
     );
@@ -103,24 +103,16 @@ export default function TodayScreen() {
 }
 
 const styles = StyleSheet.create({
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-    },
     date: {
         color: '#888',
         marginBottom: 16,
     },
     empty: {
         color: '#888',
-        fontSize: 16,
+        fontSize: 18,
         textAlign: 'center',
-        marginTop: 40,
-    },
-    done: {
-        color: '#888',
-        fontSize: 16,
-        marginBottom: 12,
+        marginTop: 12,
+        marginBottom: 18,
     },
     sectionTitle: {
         fontSize: 16,

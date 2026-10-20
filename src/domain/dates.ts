@@ -63,3 +63,12 @@ export function toDate(date: string, time: string): Date {
 
     return new Date(year, month - 1, day, hours, minutes);
 }
+
+export function addMinutesToTime(time: string, minutes: number): string {
+    const [h, m] = time.split(':').map(Number);
+    const total = Math.min(h * 60 + m + minutes, 23 * 60 + 59);
+    const hh = String(Math.floor(total / 60)).padStart(2, '0');
+    const mm = String(total % 60).padStart(2, '0');
+
+    return `${hh}:${mm}`;
+}

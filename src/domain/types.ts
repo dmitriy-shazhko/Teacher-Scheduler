@@ -37,3 +37,5 @@ export interface AppSettings {
     lessonEndingMinutes: number; // за сколько минут до конца урока показывать «Скоро конец урока»
     lessonDurationMinutes: number; // длительность урока для автоподстановки
 }
+
+export type PermissionStatus = 'granted' | 'canAsk' | 'blocked';

@@ -78,7 +78,7 @@ async function doSync(db: SQLiteDatabase): Promise<void> {
             toNotification(step, step.hideAt.getTime() - now.getTime()),
         );
     }
-    console.log(future);
+
     // Будущие состояния: каждое срабатывает по таймеру системы и само исчезает к следующему
     for (const step of future) {
         const trigger: TimestampTrigger = {

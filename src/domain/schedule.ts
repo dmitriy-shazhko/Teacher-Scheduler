@@ -1,6 +1,6 @@
 import { CurrentAndNextLessons, Lesson } from './types';
 
-function toMinutes(time: string): number {
+export function toMinutes(time: string): number {
     const [h, m] = time.split(':').map(Number);
 
     return h * 60 + m;

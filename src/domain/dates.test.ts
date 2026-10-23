@@ -13,7 +13,7 @@ describe('addMinutesToTime', () => {
         ['23:59', 0, '23:59'],
         ['00:00', 1440, '23:59'],
         ['08:00', 360, '14:00'],
-        ['20:00', 360, '23:50'],
+        ['20:00', 360, '23:59'],
     ])('%s + %i мин → %s', (time, minutes, expected) => {
         expect(addMinutesToTime(time, minutes)).toBe(expected);
     });

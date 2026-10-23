@@ -9,6 +9,22 @@ export const WEEKDAYS = [
     'Суббота',
     'Воскресенье',
 ];
+
+export const MONTHS = [
+    'янв',
+    'фев',
+    'мар',
+    'апр',
+    'мая',
+    'июн',
+    'июл',
+    'авг',
+    'сен',
+    'окт',
+    'ноя',
+    'дек',
+];
+
 export const SCHEDULER_WINDOW_DAYS = 7;
 
 export const DEFAULT_SETTINGS: AppSettings = {

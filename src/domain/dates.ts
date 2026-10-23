@@ -1,3 +1,5 @@
+import { MONTHS } from './constants';
+
 export function toDateString(d: Date): string {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -24,8 +26,6 @@ export function startOfWeek(d: Date): Date {
 export function daysBetween(a: Date, b: Date): number {
     return Math.round((b.getTime() - a.getTime()) / 86400000);
 }
-
-const MONTHS = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 
 export function formatShort(d: Date): string {
     return `${d.getDate()} ${MONTHS[d.getMonth()]}`;

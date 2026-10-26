@@ -12,7 +12,7 @@ function topicOrFallback(topic: string): string {
 }
 
 function lessonHeadline(lesson: Lesson): string {
-    const room = lesson.room.trim() ? `, каб. ${lesson.room}` : '';
+    const room = lesson.room.trim() ? `, каб. ${lesson.room.trim()}` : '';
     return `${lesson.startTime}-${lesson.endTime}, ${lesson.className}${room}`;
 }
 

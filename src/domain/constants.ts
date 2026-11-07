@@ -25,6 +25,8 @@ export const MONTHS = [
     'дек',
 ];
 
+export const WEEKDAYS_SHORT = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+
 export const SCHEDULER_WINDOW_DAYS = 7;
 
 export const DEFAULT_SETTINGS: AppSettings = {

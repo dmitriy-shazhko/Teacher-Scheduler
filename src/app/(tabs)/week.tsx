@@ -20,6 +20,7 @@ export default function WeekScreen() {
     const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
     const [copyOpen, setCopyOpen] = useState(false);
     const [sources, setSources] = useState<CopyLessonsSource[]>([]);
+    const [isCopying, setIsCopying] = useState(false);
 
     const load = useCallback(() => loadWeek(db, weekStart), [db, weekStart, loadWeek]);
 
@@ -45,11 +46,18 @@ export default function WeekScreen() {
     };
 
     const doCopy = async (source: Date) => {
-        await copyWeek(db, source, weekStart);
-        setCopyOpen(false);
+        if (isCopying) return;
+        setIsCopying(true);
+        try {
+            await copyWeek(db, source, weekStart);
+            setCopyOpen(false);
+        } finally {
+            setIsCopying(false);
+        }
     };
 
     const pickSource = (source: Date) => {
+        if (isCopying) return;
         if (lessons.length === 0) {
             doCopy(source);
             return;
@@ -99,6 +107,7 @@ export default function WeekScreen() {
                 targetWeekStart={weekStart}
                 sources={sources}
                 isOpen={copyOpen}
+                isBusy={isCopying}
                 onClose={() => setCopyOpen(false)}
                 pickSource={pickSource}
             />

@@ -6,11 +6,19 @@ interface Props {
     targetWeekStart: Date;
     sources: CopyLessonsSource[];
     isOpen: boolean;
+    isBusy: boolean;
     onClose: () => void;
     pickSource: (sourceWeekStart: Date) => void;
 }
 
-export function CopyLessonsModal({ isOpen, targetWeekStart, sources, onClose, pickSource }: Props) {
+export function CopyLessonsModal({
+    isOpen,
+    targetWeekStart,
+    sources,
+    isBusy,
+    onClose,
+    pickSource,
+}: Props) {
     return (
         <Modal visible={isOpen} transparent animationType='fade' onRequestClose={onClose}>
             <View style={styles.backdrop}>
@@ -26,8 +34,9 @@ export function CopyLessonsModal({ isOpen, targetWeekStart, sources, onClose, pi
                         sources.map((s) => (
                             <Pressable
                                 key={toDateString(s.start)}
-                                style={styles.sourceRow}
+                                style={[styles.sourceRow, isBusy && styles.sourceRowBusy]}
                                 onPress={() => pickSource(s.start)}
+                                disabled={isBusy}
                             >
                                 <Text style={styles.sourceText}>{formatWeek(s.start)}</Text>
                                 <Text style={styles.sourceCount}>уроков: {s.count}</Text>
@@ -63,6 +72,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#eef',
         marginBottom: 8,
     },
+    sourceRowBusy: { opacity: 0.5 },
     sourceText: { fontSize: 16, fontWeight: '600' },
     sourceCount: { color: '#555' },
     cancel: { padding: 12, marginTop: 4 },

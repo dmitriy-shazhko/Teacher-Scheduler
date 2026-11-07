@@ -12,7 +12,7 @@
 | `LessonCard.tsx` | `lesson: Lesson` | Белая карточка: время, класс + кабинет, тема. Нажатие — `openLesson(id)`, долгое — `confirmRemove(id)`. Отменённый: фон `#cfcfcf`, серый текст. `key` задаёт родитель |
 | `NowCard.tsx` | `label`, `hint`, `lesson`, `accent?` | Крупная карточка текущего/следующего урока, нажатие — `openLesson`. `accent` — зелёная рамка/подпись `#498d1c` |
 | `DayCard.tsx` | `name`, `day: Date`, `lessons: Lesson[]` | Заголовок «Понедельник, 5 окт», кнопка «＋» (`addLesson(dateStr)`), список `LessonCard` или «Нет уроков» |
-| `CopyLessonsModal.tsx` | `isOpen`, `targetWeekStart`, `sources`, `onClose`, `pickSource` | Модальное окно выбора недели-источника; показывает диапазон и количество уроков |
+| `CopyLessonsModal.tsx` | `isOpen`, `targetWeekStart`, `sources`, `isBusy`, `onClose`, `pickSource` | Модальное окно выбора недели-источника; показывает диапазон и количество уроков; на время копирования строки неактивны и приглушены |
 | `PickerField.tsx` | `label`, `mode: 'date' \| 'time'`, `value: Date`, `display`, `onChange` | Системный Android-пикер через `DateTimePickerAndroid.open` |
 | `SettingsSection.tsx` | `title`, `children` | Заголовок секции + белая карточка со скруглением 14 |
 | `SettingsRow.tsx` | `label`, `value`, `valueColor?`, `isLast?`, `onPress?` | Строка «подпись — значение»; без `onPress` неактивна; разделитель, кроме последней |

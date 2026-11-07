@@ -38,6 +38,7 @@ export default function LessonFormScreen() {
     const [room, setRoom] = useState('');
     const [topic, setTopic] = useState('');
     const [cancelled, setCancelled] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     // при редактировании подгружаем урок из базы
     useEffect(() => {
@@ -56,6 +57,7 @@ export default function LessonFormScreen() {
     }, [db, id, isEdit]);
 
     const save = async () => {
+        if (isSaving) return;
         if (endTime <= startTime) {
             Alert.alert('Неверное время', 'Конец урока должен быть позже начала');
             return;
@@ -75,8 +77,13 @@ export default function LessonFormScreen() {
             cancelled,
         };
 
-        await saveLesson(db, isEdit ? Number(id) : null, data);
-        router.back();
+        setIsSaving(true);
+        try {
+            await saveLesson(db, isEdit ? Number(id) : null, data);
+            router.back();
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -160,7 +167,7 @@ export default function LessonFormScreen() {
                 <Switch value={cancelled} onValueChange={setCancelled} />
             </View>
 
-            <Pressable style={styles.saveButton} onPress={save}>
+            <Pressable style={styles.saveButton} onPress={save} disabled={isSaving}>
                 <Text style={styles.saveText}>Сохранить</Text>
             </Pressable>
         </ScrollView>

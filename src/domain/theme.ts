@@ -18,5 +18,6 @@ export const colors = {
     warning: '#cf9801',
     info: '#056ccc',
     barMuted: '#cfd2e0',
+    transparent: 'transparent',
     overlay: 'rgba(0, 0, 0, 0.4)',
 };

@@ -176,6 +176,7 @@ export const colors = {
     warning: '#cf9801',      // подпись NowCard
     info: '#056ccc',         // класс/кабинет в NowCard
     barMuted: '#cfd2e0',     // полоса отменённого урока
+    transparent: 'transparent', // прозрачный фон (IconButton variant='ghost')
     overlay: 'rgba(0, 0, 0, 0.4)', // подложка Modal
 };
 ```

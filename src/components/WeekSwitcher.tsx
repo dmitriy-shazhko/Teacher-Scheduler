@@ -1,7 +1,7 @@
 // src/components/WeekSwitcher.tsx
 import { colors } from '@/domain/theme';
-import { Feather } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { IconButton } from './IconButton';
 
 interface Props {
     label: string;
@@ -14,9 +14,12 @@ interface Props {
 export function WeekSwitcher({ label, isCurrent, onPrev, onNext, onToday }: Props) {
     return (
         <View style={styles.card}>
-            <Pressable onPress={onPrev} hitSlop={12} accessibilityLabel='Предыдущая неделя'>
-                <Feather name='chevron-left' size={24} color={colors.primary} />
-            </Pressable>
+            <IconButton
+                variant='ghost'
+                icon='chevron-left'
+                label='Предыдущая неделя'
+                onPress={onPrev}
+            />
 
             <View style={styles.center}>
                 <Text style={styles.label}>{label}</Text>
@@ -29,9 +32,12 @@ export function WeekSwitcher({ label, isCurrent, onPrev, onNext, onToday }: Prop
                 )}
             </View>
 
-            <Pressable onPress={onNext} hitSlop={12} accessibilityLabel='Следующая неделя'>
-                <Feather name='chevron-right' size={24} color={colors.primary} />
-            </Pressable>
+            <IconButton
+                variant='ghost'
+                icon='chevron-right'
+                label='Следующая неделя'
+                onPress={onNext}
+            />
         </View>
     );
 }

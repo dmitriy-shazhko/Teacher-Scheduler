@@ -1,4 +1,5 @@
 import { PickerField } from '@/components/PickerField';
+import { Screen } from '@/components/Screen';
 import { getLessonById } from '@/db/lessons';
 import {
     addMinutesToTime,
@@ -88,99 +89,86 @@ export default function LessonFormScreen() {
     };
 
     return (
-        <ScrollView
-            style={styles.container}
-            contentContainerStyle={styles.content}
-            keyboardShouldPersistTaps='handled'
-        >
-            <View style={styles.header}>
-                <Pressable onPress={() => router.back()} hitSlop={12}>
-                    <Text style={styles.back}>‹ Назад</Text>
+        <Screen title={isEdit ? 'Урок' : 'Новый урок'} onBack={() => router.back()}>
+            <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps='handled'>
+                <PickerField
+                    label='Дата'
+                    mode='date'
+                    value={parseDate(lessonDate)}
+                    display={formatDateRu(lessonDate)}
+                    onChange={(d) => setLessonDate(toDateString(d))}
+                />
+
+                <View style={styles.row}>
+                    <View style={styles.flex}>
+                        <PickerField
+                            label='Начало'
+                            mode='time'
+                            value={timeToDate(startTime)}
+                            display={startTime}
+                            onChange={(d) => {
+                                const start = dateToTime(d);
+                                setStartTime(start);
+                                setEndTime(addMinutesToTime(start, lessonDuration));
+                            }}
+                        />
+                    </View>
+                    <View style={styles.flex}>
+                        <PickerField
+                            label='Конец'
+                            mode='time'
+                            value={timeToDate(endTime)}
+                            display={endTime}
+                            onChange={(d) => setEndTime(dateToTime(d))}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.row}>
+                    <View style={styles.flex}>
+                        <Text style={styles.label}>Класс</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={className}
+                            onChangeText={setClassName}
+                            placeholder='7Б'
+                        />
+                    </View>
+                    <View style={styles.flex}>
+                        <Text style={styles.label}>Кабинет</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={room}
+                            onChangeText={setRoom}
+                            placeholder='214'
+                        />
+                    </View>
+                </View>
+
+                <Text style={styles.label}>Тема</Text>
+                <TextInput
+                    style={[styles.input, styles.multiline]}
+                    value={topic}
+                    onChangeText={setTopic}
+                    placeholder='Квадратные уравнения'
+                    multiline
+                />
+
+                <View style={styles.switchRow}>
+                    <Text style={styles.switchLabel}>Урок отменён</Text>
+                    <Switch value={cancelled} onValueChange={setCancelled} />
+                </View>
+
+                <Pressable style={styles.saveButton} onPress={save} disabled={isSaving}>
+                    <Text style={styles.saveText}>Сохранить</Text>
                 </Pressable>
-                <Text style={styles.title}>{isEdit ? 'Урок' : 'Новый урок'}</Text>
-            </View>
-
-            <PickerField
-                label='Дата'
-                mode='date'
-                value={parseDate(lessonDate)}
-                display={formatDateRu(lessonDate)}
-                onChange={(d) => setLessonDate(toDateString(d))}
-            />
-
-            <View style={styles.row}>
-                <View style={styles.flex}>
-                    <PickerField
-                        label='Начало'
-                        mode='time'
-                        value={timeToDate(startTime)}
-                        display={startTime}
-                        onChange={(d) => {
-                            const start = dateToTime(d);
-                            setStartTime(start);
-                            setEndTime(addMinutesToTime(start, lessonDuration));
-                        }}
-                    />
-                </View>
-                <View style={styles.flex}>
-                    <PickerField
-                        label='Конец'
-                        mode='time'
-                        value={timeToDate(endTime)}
-                        display={endTime}
-                        onChange={(d) => setEndTime(dateToTime(d))}
-                    />
-                </View>
-            </View>
-
-            <View style={styles.row}>
-                <View style={styles.flex}>
-                    <Text style={styles.label}>Класс</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={className}
-                        onChangeText={setClassName}
-                        placeholder='7Б'
-                    />
-                </View>
-                <View style={styles.flex}>
-                    <Text style={styles.label}>Кабинет</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={room}
-                        onChangeText={setRoom}
-                        placeholder='214'
-                    />
-                </View>
-            </View>
-
-            <Text style={styles.label}>Тема</Text>
-            <TextInput
-                style={[styles.input, styles.multiline]}
-                value={topic}
-                onChangeText={setTopic}
-                placeholder='Квадратные уравнения'
-                multiline
-            />
-
-            <View style={styles.switchRow}>
-                <Text style={styles.switchLabel}>Урок отменён</Text>
-                <Switch value={cancelled} onValueChange={setCancelled} />
-            </View>
-
-            <Pressable style={styles.saveButton} onPress={save} disabled={isSaving}>
-                <Text style={styles.saveText}>Сохранить</Text>
-            </Pressable>
-        </ScrollView>
+            </ScrollView>
+        </Screen>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: colors.bg },
-    content: { padding: 16, paddingTop: 60 },
-    header: { marginBottom: 16 },
-    back: { color: colors.primary, fontSize: 16, marginBottom: 8 },
-    title: { fontSize: 28, fontWeight: 'bold', color: colors.text },
+    content: { paddingBottom: 16 },
     label: { fontWeight: '600', marginBottom: 4, marginTop: 12, color: colors.text },
     input: {
         borderWidth: 1,

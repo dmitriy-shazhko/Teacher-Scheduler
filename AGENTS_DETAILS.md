@@ -42,7 +42,7 @@
 | --- | --- | --- |
 | Каркас | Expo SDK 57 + TypeScript | используется |
 | Навигация | `expo-router` | используется |
-| Иконки | `@expo/vector-icons` (Ionicons) | используется |
+| Иконки | `@expo/vector-icons` (Feather) | используется |
 | БД | `expo-sqlite`, чистый SQL | используется |
 | Состояние | `zustand` | используется |
 | Настройки | `expo-sqlite/kv-store` (ключ `settings`, JSON) | используется |
@@ -196,7 +196,8 @@ export type PermissionStatus = 'granted' | 'canAsk' | 'blocked';
   `* text=auto eol=lf`. Готово. `expo-doctor` не включать, EAS Build не нужен.
 - **T3.** Unit-тесты `src/domain/`: `dates` (форматирование, понедельник, DST,
   `addMinutesToTime`, граница `23:59`), `schedule` (границы, отменённые),
-  `notificationTexts` (пустые кабинет/тема), `statusTimeline` (основной объём). Готово.
+  `notificationTexts` (пустые кабинет/тема), `statusTimeline` (основной объём),
+  `textFormaters` (`pluralLessons`). Готово.
 - **T4.** Интеграционные тесты БД на `better-sqlite3` в памяти + адаптер (~30–40 строк) в
   `test/helpers/` под `runAsync`, `getAllAsync`, `getFirstAsync`, `execAsync`,
   `withTransactionAsync`. Проверить миграцию на пустой базе и повторный запуск,
@@ -271,7 +272,9 @@ export type PermissionStatus = 'granted' | 'canAsk' | 'blocked';
   - `statusTimeline.ts`: один урок; уроки подряд без перемены (пропуск `upcoming`);
     перемена; первый урок дня с `firstLessonStartingMinutes`; отменённый; `now` посреди
     урока; граничные настройки (`0`, `lessonEndingMinutes` = длительности); уникальность
-    `id`; отсутствие пересечений.
+    `id`; отсутствие пересечений;
+  - `textFormaters.ts`: `pluralLessons` — все три формы на диапазоне 0–122, включая
+    исключения 11–14 и 111–114.
 - Известные баги фиксируются `it.failing(...)`: пока баг есть, тест зелёный; после
   исправления `.failing` убрать. Сейчас так отмечен баг №1.
 - В `src/app/` тестов быть не должно: expo-router сделает их маршрутами.

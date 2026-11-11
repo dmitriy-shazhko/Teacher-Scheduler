@@ -1,6 +1,9 @@
+// src/components/LessonCard.tsx
+import { colors } from '@/domain/theme';
 import { Lesson } from '@/domain/types';
 import { useLessonActions } from '@/hooks/useLessonActions';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { IconButton } from './IconButton';
 
 interface Props {
     lesson: Lesson;
@@ -8,47 +11,67 @@ interface Props {
 
 export function LessonCard({ lesson }: Props) {
     const { openLesson, confirmRemove } = useLessonActions();
+    const onDelete = () => {
+        confirmRemove(lesson.id);
+    };
 
     return (
         <Pressable
             onPress={() => openLesson(lesson.id)}
-            onLongPress={() => confirmRemove(lesson.id)}
-            style={[styles.card, lesson.cancelled && styles.cancelled]}
+            style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }]}
         >
-            <Text style={[styles.time, lesson.cancelled && styles.cancelledText]}>
-                {lesson.startTime}-{lesson.endTime}
-            </Text>
-            <Text style={[styles.main, lesson.cancelled && styles.cancelledText]}>
-                {lesson.className}, кабинет {lesson.room}
-            </Text>
-            <Text style={lesson.cancelled && styles.cancelledText}>
-                {lesson.topic || 'тема не указана'}
-            </Text>
+            <View style={styles.times}>
+                <Text style={[styles.start, lesson.cancelled && styles.struck]}>
+                    {lesson.startTime}
+                </Text>
+                <Text style={styles.end}>{lesson.endTime}</Text>
+            </View>
+
+            <View style={[styles.bar, lesson.cancelled && styles.barMuted]} />
+
+            <View style={styles.body}>
+                <Text style={styles.title}>
+                    {lesson.className} · {lesson.room ? `каб. ${lesson.room}` : 'кабинет не указан'}
+                </Text>
+                {!!lesson.topic && <Text style={styles.topic}>{lesson.topic}</Text>}
+                {lesson.cancelled && (
+                    <View style={styles.badge}>
+                        <Text style={styles.badgeText}>Отменён</Text>
+                    </View>
+                )}
+            </View>
+
+            <IconButton variant='danger' icon='trash-2' label='Удалить' onPress={onDelete} />
         </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
     card: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
         padding: 12,
+        marginBottom: 10,
+        backgroundColor: colors.card,
+        borderRadius: 18,
+    },
+    times: { width: 54, alignItems: 'center' },
+    start: { fontSize: 16, fontWeight: '800', color: colors.text },
+    struck: { textDecorationLine: 'line-through', color: colors.muted },
+    end: { fontSize: 12, color: colors.muted },
+    bar: { width: 3, alignSelf: 'stretch', borderRadius: 2, backgroundColor: colors.primary },
+    barMuted: { backgroundColor: colors.barMuted },
+    body: { flex: 1 },
+    title: { fontSize: 15, fontWeight: '700', color: colors.text },
+    topic: { fontSize: 13, color: colors.muted, marginTop: 2 },
+    badge: {
+        alignSelf: 'flex-start',
+        backgroundColor: colors.warnBg,
         borderRadius: 8,
-        backgroundColor: '#fff',
-        marginBottom: 12,
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        marginTop: 4,
     },
-    time: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    main: {
-        fontSize: 16,
-        marginVertical: 4,
-        color: '#056ccc',
-        fontWeight: '600',
-    },
-    cancelled: {
-        backgroundColor: '#cfcfcf',
-    },
-    cancelledText: {
-        color: '#8f8f8f',
-    },
+    badgeText: { fontSize: 11, fontWeight: '700', color: colors.warnText },
 });

@@ -1,34 +1,53 @@
 import { CopyLessonsModal } from '@/components/CopyLessonsModal';
-import { DayCard } from '@/components/DayCard';
+import { DayStrip } from '@/components/DayStrip';
+import { IconButton } from '@/components/IconButton';
+import { LessonCard } from '@/components/LessonCard';
 import { Screen } from '@/components/Screen';
+import { WeekSwitcher } from '@/components/WeekSwitcher';
 import { countLessonsForWeek } from '@/db/lessons';
-import { WEEKDAYS } from '@/domain/constants';
+import { MONTHS, WEEKDAYS } from '@/domain/constants';
 import { addDays, formatWeek, startOfWeek, toDateString } from '@/domain/dates';
+import { pluralLessons } from '@/domain/textFormaters';
+import { colors } from '@/domain/theme';
 import { CopyLessonsSource } from '@/domain/types';
+import { useLessonActions } from '@/hooks/useLessonActions';
 import { useLessonStore } from '@/store/lessonsStore';
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function WeekScreen() {
     const db = useSQLiteContext();
     const loadWeek = useLessonStore((s) => s.loadWeek);
     const lessons = useLessonStore((s) => s.lessons);
     const copyWeek = useLessonStore((s) => s.copyWeek);
+    const { addLesson } = useLessonActions();
 
     const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
     const [copyOpen, setCopyOpen] = useState(false);
     const [sources, setSources] = useState<CopyLessonsSource[]>([]);
     const [isCopying, setIsCopying] = useState(false);
+    const [selected, setSelected] = useState(() =>
+        Math.min((new Date().getDay() + 6) % 7, WEEKDAYS.length - 1),
+    );
+    const todayStr = toDateString(new Date());
+    const todayIndex = WEEKDAYS.findIndex(
+        (_, i) => toDateString(addDays(weekStart, i)) === todayStr,
+    );
+    const isCurrentWeek = toDateString(weekStart) === toDateString(startOfWeek(new Date()));
+
+    const day = addDays(weekStart, selected);
+    const dayStr = toDateString(day);
+    const dayLessons = lessons
+        .filter((l) => l.date === dayStr)
+        .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+    const summary = dayLessons.length
+        ? `${pluralLessons(dayLessons.length)} · ${dayLessons[0].startTime} – ${dayLessons[dayLessons.length - 1].endTime}`
+        : 'Уроков нет';
 
     const load = useCallback(() => loadWeek(db, weekStart), [db, weekStart, loadWeek]);
-
-    useFocusEffect(
-        useCallback(() => {
-            load();
-        }, [load]),
-    );
 
     const shiftWeek = (n: number) => setWeekStart(addDays(weekStart, 7 * n));
     const setCurrentWeek = () => setWeekStart(startOfWeek(new Date()));
@@ -72,35 +91,56 @@ export default function WeekScreen() {
         );
     };
 
+    const toNextWeek = () => shiftWeek(1);
+    const toPrevWeek = () => shiftWeek(-1);
+
+    useFocusEffect(
+        useCallback(() => {
+            load();
+        }, [load]),
+    );
+
     return (
-        <Screen title='Неделя'>
-            <View style={styles.weekSwitcher}>
-                <Pressable onPress={() => shiftWeek(-1)} hitSlop={12}>
-                    <Text style={styles.arrow}>‹</Text>
-                </Pressable>
-                <Text style={styles.weekLabel}>{formatWeek(weekStart)}</Text>
-                <Pressable onPress={() => shiftWeek(1)} hitSlop={12}>
-                    <Text style={styles.arrow}>›</Text>
-                </Pressable>
+        <Screen
+            title='Неделя'
+            rightBlock={<IconButton icon='copy' label='Копировать неделю' onPress={openCopy} />}
+        >
+            <WeekSwitcher
+                label={formatWeek(weekStart)}
+                isCurrent={isCurrentWeek}
+                onPrev={toPrevWeek}
+                onNext={toNextWeek}
+                onToday={setCurrentWeek}
+            />
+
+            <DayStrip
+                weekStart={weekStart}
+                selected={selected}
+                todayIndex={todayIndex}
+                onSelect={setSelected}
+            />
+
+            <View style={styles.dayHeader}>
+                <View>
+                    <Text style={styles.dayTitle}>
+                        {WEEKDAYS[selected]}, {day.getDate()} {MONTHS[day.getMonth()]}
+                    </Text>
+                    <Text style={styles.daySub}>{summary}</Text>
+                </View>
+                <IconButton
+                    variant='primary'
+                    icon='plus'
+                    label='Добавить урок'
+                    onPress={() => addLesson(dayStr)}
+                />
             </View>
 
-            <View style={styles.buttonsRow}>
-                <Pressable style={[styles.button, styles.flex]} onPress={setCurrentWeek}>
-                    <Text style={styles.buttonText}>Текущая неделя</Text>
-                </Pressable>
-                <Pressable style={[styles.button, styles.flex]} onPress={openCopy}>
-                    <Text style={styles.buttonText}>Скопировать неделю</Text>
-                </Pressable>
-            </View>
-
-            <ScrollView>
-                {WEEKDAYS.map((name, i) => {
-                    const day = addDays(weekStart, i);
-                    const dateStr = toDateString(day);
-                    const dayLessons = lessons.filter((l) => l.date === dateStr);
-
-                    return <DayCard key={dateStr} name={name} day={day} lessons={dayLessons} />;
-                })}
+            <ScrollView contentContainerStyle={styles.list}>
+                {dayLessons.length === 0 ? (
+                    <Text style={styles.empty}>В этот день уроков нет</Text>
+                ) : (
+                    dayLessons.map((l) => <LessonCard key={l.id} lesson={l} />)
+                )}
             </ScrollView>
 
             <CopyLessonsModal
@@ -116,27 +156,15 @@ export default function WeekScreen() {
 }
 
 const styles = StyleSheet.create({
-    weekSwitcher: {
+    dayHeader: {
         flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 12,
+        alignItems: 'center',
+        marginTop: 14,
+        marginBottom: 10,
     },
-    arrow: { fontSize: 32, paddingHorizontal: 12 },
-    weekLabel: { fontSize: 18, fontWeight: '600' },
-    buttonsRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-    flex: { flex: 1 },
-    button: { backgroundColor: '#4a4ae0', padding: 12, borderRadius: 8 },
-    buttonText: { color: 'white', fontWeight: '600', textAlign: 'center' },
-    dayBlock: { marginBottom: 12 },
-    dayTitle: { fontSize: 16, fontWeight: '700', marginBottom: 6 },
-    empty: { color: '#888', marginBottom: 4 },
-    card: {
-        padding: 12,
-        borderRadius: 8,
-        backgroundColor: '#eef',
-        marginBottom: 8,
-    },
-    time: { fontSize: 16, fontWeight: '600', marginBottom: 2 },
-    topic: { color: '#555', marginTop: 2 },
+    dayTitle: { fontSize: 17, fontWeight: '700', color: colors.text },
+    daySub: { fontSize: 12, color: colors.muted, marginTop: 2 },
+    list: { paddingBottom: 16 },
+    empty: { color: colors.muted, textAlign: 'center', marginTop: 24 },
 });

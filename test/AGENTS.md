@@ -62,7 +62,8 @@ module.exports = {
 ## Текущее состояние
 
 - T1: Jest + globalSetup + `timezone.test.ts` — готово.
-- T3: unit-тесты `dates`, `schedule`, `notificationTexts`, `statusTimeline` — готово.
+- T3: unit-тесты `dates`, `schedule`, `notificationTexts`, `statusTimeline`,
+  `textFormaters` — готово.
 - T4 (план): интеграционные тесты БД через `better-sqlite3` + адаптер под
   `SQLiteDatabase` (`runAsync`, `getAllAsync`, `getFirstAsync`, `execAsync`,
   `withTransactionAsync`) в `test/helpers/`. Запасные варианты: `sql.js`, `node:sqlite`.

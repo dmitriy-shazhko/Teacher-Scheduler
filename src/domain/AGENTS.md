@@ -14,6 +14,8 @@
 | `schedule.ts` | `toMinutes`, `getCurrentAndNextLessons`, `getNextLessonOfDay`, `lessonIsPassed`, `formatDuration` |
 | `notificationTexts.ts` | `buildEndingText`, `buildNextLessonText`, `buildCurrentLessonText` |
 | `statusTimeline.ts` | `buildStatusTimeline(lessons, now, settings)` → `StatusStep[]` |
+| `textFormaters.ts` | `pluralLessons(n)` — «1 урок / 2 урока / 5 уроков» |
+| `theme.ts` | `colors` — единственная палитра приложения |
 
 Типы:
 
@@ -98,6 +100,15 @@ interface AppSettings {
 «Тема не указана»; тема обрезается по краям. Блок «Далее:» владелец отклонил — не
 добавлять. Уведомления строятся для самого урока (`step.lesson`), а не для `step.next`.
 
+## Тексты интерфейса (`textFormaters.ts`)
+
+- `pluralLessons(n)` → `` `${n} урок` ``, `` `${n} урока` ``, `` `${n} уроков` `` по
+  правилам русского языка: 1, 21, 101 → «урок»; 2–4, 22–24, 102–104 → «урока»;
+  остальные (0, 5–20, 25–100, 111–114, …) → «уроков».
+- Используется в сводке дня на экране «Неделя» (`week.tsx`).
+- Имя файла исторически с опечаткой (`Formaters`, не `Formatters`); импорт —
+  `@/domain/textFormaters`.
+
 ## План состояний (`statusTimeline.ts`)
 
 `buildStatusTimeline(lessons, now, settings): StatusStep[]` — чистая функция, главный
@@ -142,9 +153,37 @@ interface AppSettings {
 - `SCHEDULER_WINDOW_DAYS = 7` (окно: сегодня + 7 дней = 8 календарных дат).
 - Настройки передаются в чистые функции **параметром**, не читаются из стора/БД.
 
+## Палитра (`theme.ts`)
+
+```ts
+export const colors = {
+    bg: '#f4f5fb',          // фон экранов
+    card: '#ffffff',        // карточки, tab bar
+    text: '#1a1a2e',        // заголовки и основной текст
+    muted: '#6b7088',       // вторичный текст
+    primary: '#4f46e5',     // акцент, активная вкладка, полоса урока
+    primaryTint: '#eef0ff', // фон «сегодня» в DayStrip
+    primaryBorder: '#c7c9f5',
+    divider: '#eceef6',     // разделители, borderTop tab bar
+    danger: '#dc2626',      // удаление
+    dangerBg: '#fdeeee',
+    warnBg: '#fdf0c4',      // бейдж «Отменён»
+    warnText: '#92400e',
+    barMuted: '#cfd2e0',    // полоса отменённого урока
+};
+```
+
+- Это **единственный** источник цветов для компонентов: импорт `@/domain/theme`,
+  хардкод `'#...'` в новом коде запрещён. Легаси-исключения (`NowCard`, `Settings*`,
+  `BatteryHint`, `COLOR_DANGER` в `constants.ts`) переводятся постепенно (TODO п. 1).
+- `theme.ts` — просто объект, ни от чего не зависит; `react-native` сюда не импортировать.
+- `COLOR_DANGER = '#c0392b'` в `constants.ts` остался для экрана настроек и не совпадает
+  с `colors.danger`; новый код берёт `colors.danger`.
+
 ## Тесты
 Лежат рядом: `dates.test.ts`, `schedule.test.ts`, `notificationTexts.test.ts`,
-`statusTimeline.test.ts`; запуск — `npm test`. Ключевое: `now` параметром, TZ
-`Europe/Berlin` из `test/globalSetup.js`, локальные даты, `it.each` и `makeLesson`.
+`statusTimeline.test.ts`, `textFormaters.test.ts`; запуск — `npm test`. Ключевое: `now`
+параметром, TZ `Europe/Berlin` из `test/globalSetup.js`, локальные даты, `it.each` и
+`makeLesson`.
 Известные баги — `it.failing(...)`, после фикса `.failing` убрать (сейчас баг №1).
 Полный список покрытия и правила — `../../AGENTS_DETAILS.md`, раздел «Тесты domain».

@@ -11,8 +11,8 @@
 - `openLesson` — `router.push({ pathname: '/lesson', params: { id: String(id) } })`.
 - `confirmRemove` — `Alert.alert` с «Отмена/Удалить», удаление через
   `useLessonStore.removeLesson`.
-- Используется в `LessonCard`, `NowCard`, `DayCard`, чтобы не тащить колбэки через
-  пропсы.
+- Используется в `LessonCard`, `NowCard` и на экране «Неделя» (кнопка «＋»), чтобы не
+  тащить колбэки через пропсы.
 - Требует `useSQLiteContext()` — вызывать только внутри `SQLiteProvider`.
 
 ## `useNotificationSync.ts`

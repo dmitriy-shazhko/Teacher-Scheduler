@@ -19,6 +19,7 @@ Android-приложение расписания для учителя: уро�
 ## Что делает приложение
 
 1. Расписание на неделю; каждый урок — отдельная запись с датой (прошлые недели хранятся).
+   На экране «Неделя» — полоса дней пн–вс и список выбранного дня.
 2. Поля урока: дата, начало, конец, класс, кабинет, тема, флаг «отменён».
 3. Одно живое уведомление в шторке: `upcoming` → `current` → `ending` («Скоро конец
    урока», вибрация, обратный отсчёт) — по системному таймеру.
@@ -33,7 +34,8 @@ Android-приложение расписания для учителя: уро�
 
 ## Стек
 
-- Expo SDK 57, React Native 0.86, React 19.2, TypeScript 6 (strict), `expo-router`, Ionicons.
+- Expo SDK 57, React Native 0.86, React 19.2, TypeScript 6 (strict), `expo-router`,
+  иконки Feather (`@expo/vector-icons`).
 - `expo-sqlite` (чистый SQL, миграции `PRAGMA user_version`), `zustand`, настройки —
   `expo-sqlite/kv-store` (ключ `settings`, JSON).
 - `@react-native-community/datetimepicker` (Android-пикеры), `react-native-notify-kit`
@@ -66,7 +68,7 @@ src/
   app/          только экраны-маршруты (default export)
   components/   переиспользуемые компоненты (named export)
   db/           SQLite, миграции, уроки, kv-store настроек
-  domain/       типы, константы, чистые функции дат/расписания/уведомлений
+  domain/       типы, константы, палитра, чистые функции дат/расписания/текстов
   hooks/        useLessonActions, useNotificationSync, useNotificationPermission
   notifications/ каналы, разрешения, init, планировщик
   store/        zustand: lessonsStore, settingsStore
@@ -108,20 +110,27 @@ test/           jest globalSetup, helpers, общие тесты
 - TypeScript strict; компоненты — именованный экспорт, `default export` только у экранов.
 - Импорты через `@/…`; Prettier: одинарные кавычки (в JSX тоже), 4 пробела, ширина 100,
   `;`, trailing comma. `StyleSheet.create` в конце файла, один компонент = один файл.
-- Константы — в `src/domain/constants.ts`. Палитра: акцент `#4a4ae0`, фон `#f4f4f8`,
-  заголовки `#1c1c28`, класс `#056ccc`, отменённый `#cfcfcf`/`#8f8f8f`, ошибка `#c0392b`.
-  Детали и цвета `NowCard` — в `src/components/AGENTS.md`.
+- Константы — в `src/domain/constants.ts`, цвета — в `src/domain/theme.ts` (`colors`):
+  акцент `#4f46e5`, фон `#f4f5fb`, текст `#1a1a2e`, вторичный `#6b7088`, удаление
+  `#dc2626`, бейдж «Отменён» `#fdf0c4`/`#92400e`. Хардкод цветов в новом коде не
+  добавлять; легаси (`NowCard`, `Settings*`, `BatteryHint`, `COLOR_DANGER`) — в
+  `src/components/AGENTS.md`.
 - Заголовки/отступы вкладок даёт `Screen`; свой `paddingTop` не добавлять.
 - Машинный формат даты внутри, форматирование — только при выводе.
 - Настройки читать из `useSettingsStore`, менять только через `updateSettings`.
 - Тесты — рядом с кодом в `domain`, `db`, `store`, `notifications`; **не в `src/app/`**.
 
-## Состояние (02.11.2026)
+## Состояние (11.11.2026)
 
 Готово: экраны, форма урока, SQLite/миграции, сторы, настройки, уведомления (каналы,
 разрешения, план, планировщик, синхронизация). Шаг T: T1 (Jest + TZ), T2 (CI), T3
-(unit-тесты `dates`, `schedule`, `notificationTexts`, `statusTimeline`). Баг №1 отмечен
-`it.failing`.
+(unit-тесты `dates`, `schedule`, `notificationTexts`, `statusTimeline`,
+`textFormaters`). Баг №1 отмечен `it.failing`.
+
+UI-редизайн: палитра в `src/domain/theme.ts`, компоненты `IconButton`, `DayStrip`,
+`WeekSwitcher`; «Неделя» показывает выбранный день, «＋» создаёт урок на этот день;
+`LessonCard` — новая карточка с корзиной (удаление с любой вкладки); `Screen` получил
+`rightBlock` и `onBack`.
 
 Дальше по порядку: **T4** — тесты БД на `better-sqlite3` (или `sql.js`/`node:sqlite`);
 **T5** — тесты планировщика/стора с моками и `syncNotifications(db, now?)`; затем баги

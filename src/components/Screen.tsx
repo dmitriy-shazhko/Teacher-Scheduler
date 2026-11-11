@@ -1,21 +1,27 @@
 import { colors } from '@/domain/theme';
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TOP_GAP = 28;
 
 interface Props {
     title: string;
-    rightBlock?: ReactNode;
     children: ReactNode;
+    rightBlock?: ReactNode;
+    onBack?: () => void;
 }
 
-export function Screen({ title, children, rightBlock }: Props) {
+export function Screen({ title, children, rightBlock, onBack }: Props) {
     const insets = useSafeAreaInsets();
 
     return (
         <View style={[styles.container, { paddingTop: insets.top + TOP_GAP }]}>
+            {onBack && (
+                <Pressable onPress={onBack} hitSlop={12} style={styles.back}>
+                    <Text style={styles.backText}>‹ Назад</Text>
+                </Pressable>
+            )}
             <View style={styles.header}>
                 <Text style={styles.title}>{title}</Text>
                 {rightBlock}
@@ -42,4 +48,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: colors.text,
     },
+    back: { minHeight: 32, justifyContent: 'center', alignSelf: 'flex-start', marginBottom: 4 },
+    backText: { color: colors.primary, fontSize: 13 },
 });

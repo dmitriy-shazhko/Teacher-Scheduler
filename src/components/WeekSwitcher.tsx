@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         backgroundColor: colors.card,
         borderRadius: 18,
-        paddingVertical: 8,
+        paddingVertical: 0,
         paddingHorizontal: 14,
         marginBottom: 12,
     },

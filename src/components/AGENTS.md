@@ -14,9 +14,9 @@
 | `LessonCard.tsx` | `lesson: Lesson` | Карточка урока строкой: колонка времени (начало 16 px bold, конец 12 px), цветная полоса слева, класс + `каб. N` (или «кабинет не указан»), тема, если есть. Нажатие — `openLesson(id)`, корзина `IconButton variant='danger'` — `confirmRemove(id)`. Отменённый: начало зачёркнуто, полоса `colors.barMuted`, бейдж «Отменён». `key` задаёт родитель |
 | `NowCard.tsx` | `label`, `hint`, `lesson`, `accent?` | Крупная карточка текущего/следующего урока, нажатие — `openLesson`. `accent` — зелёная рамка/подпись `colors.success` |
 | `DayCard.tsx` | `name`, `day: Date`, `lessons: Lesson[]` | Легаси: заголовок «Понедельник, 5 окт», «＋» и список `LessonCard`. Экран «Неделя» им больше не пользуется (`DayStrip` + список выбранного дня); удалить, когда пропадёт последний потребитель |
-| `IconButton.tsx` | `icon`, `label`, `onPress`, `variant?: 'light' \| 'danger' \| 'primary' \| 'ghost'` | Кнопка-иконка (Feather) 44×44; `label` уходит в `accessibilityLabel`. `light` — карточка + акцент, `danger` — красная на `dangerBg`, `primary` — белая на акценте, `ghost` — прозрачный фон, без фиксированного бокса (габарит = размер иконки 24), поэтому для тапа `hitSlop: 12`; для иконок внутри карточек (`WeekSwitcher`). Использовать вместо самодельных `Pressable` с иконкой |
+| `IconButton.tsx` | `icon`, `label`, `onPress`, `variant?: 'light' \| 'danger' \| 'primary' \| 'ghost'`, `size?: number` | Кнопка-иконка (Feather); `label` уходит в `accessibilityLabel`. `size` — сторона квадрата, по умолчанию 44; иконка = `round(size * 0.45)` (20 при 44), радиус масштабируется от 12/22. `light` — карточка + акцент, `danger` — красная на `dangerBg`, `primary` — белая на акценте, `ghost` — прозрачный фон (тот же квадрат, для иконок внутри карточек, `WeekSwitcher`). Использовать вместо самодельных `Pressable` с иконкой |
 | `DayStrip.tsx` | `weekStart: Date`, `selected: number`, `todayIndex: number`, `onSelect(i)` | Ряд из 7 пилюль «Пн / 5»: сегодня — `primaryTint` + рамка, выбранный день — `primary` с белым текстом; `todayIndex = -1`, если сегодня не на этой неделе |
-| `WeekSwitcher.tsx` | `label`, `isCurrent`, `onPrev`, `onNext`, `onToday` | Карточка-переключатель недель: ‹ › — `IconButton variant='ghost'`, подпись `formatWeek`; в текущей неделе — «Текущая неделя», иначе кликабельное «К текущей неделе» |
+| `WeekSwitcher.tsx` | `label`, `isCurrent`, `onPrev`, `onNext`, `onToday` | Карточка-переключатель недель высотой 44: ‹ › — `IconButton variant='ghost'` (44 px, карточка без `paddingVertical`), подпись `formatWeek`; в текущей неделе — «Текущая неделя», иначе кликабельное «К текущей неделе» |
 | `CopyLessonsModal.tsx` | `isOpen`, `targetWeekStart`, `sources`, `isBusy`, `onClose`, `pickSource` | Модальное окно выбора недели-источника; показывает диапазон и количество уроков; на время копирования строки неактивны и приглушены |
 | `PickerField.tsx` | `label`, `mode: 'date' \| 'time'`, `value: Date`, `display`, `onChange` | Системный Android-пикер через `DateTimePickerAndroid.open` |
 | `SettingsSection.tsx` | `title`, `children` | Заголовок секции + белая карточка со скруглением 14 |
@@ -69,8 +69,8 @@
 - Заголовок и safe-area отступы вкладкам даёт `Screen`; собственный `paddingTop` не
   добавлять.
 - Карточки кликабельны через `Pressable`; для мелких кнопок использовать `hitSlop`, для
-  кнопок-иконок — `IconButton`, а не новый `Pressable`. Иконка внутри карточки, где
-  квадрат 44×44 не влезает (`WeekSwitcher`), — `IconButton variant='ghost'`.
+  кнопок-иконок — `IconButton`, а не новый `Pressable`. Нужен другой габарит — проп
+  `size` (по умолчанию 44); иконка внутри карточки без фона — `variant='ghost'`.
 - Иконки — `Feather` из `@expo/vector-icons`; `Ionicons` в проекте больше не используется.
 - Вложенный `Pressable` (корзина внутри карточки урока) допустим: жест забирает внутренний.
   После правок такого места проверять на телефоне, что не срабатывают оба обработчика

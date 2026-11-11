@@ -1,4 +1,5 @@
 import { formatDuration } from '@/domain/schedule';
+import { colors } from '@/domain/theme';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -48,6 +49,7 @@ export function OptionPickerModal({
                                 onChangeText={(t) => setText(t.replace(/\D/g, ''))}
                                 keyboardType='number-pad'
                                 placeholder='Минут'
+                                placeholderTextColor={colors.muted}
                                 maxLength={3}
                                 autoFocus
                             />
@@ -112,10 +114,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         paddingHorizontal: 32,
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        backgroundColor: colors.overlay,
     },
     sheet: {
-        backgroundColor: '#fff',
+        backgroundColor: colors.card,
         borderRadius: 14,
         paddingVertical: 8,
         overflow: 'hidden',
@@ -123,7 +125,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1c1c28',
+        color: colors.text,
         paddingHorizontal: 16,
         paddingVertical: 12,
     },
@@ -134,19 +136,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    optionText: { fontSize: 16, color: '#1c1c28' },
-    selectedText: { fontSize: 16, fontWeight: '600', color: '#4a4ae0' },
+    optionText: { fontSize: 16, color: colors.text },
+    selectedText: { fontSize: 16, fontWeight: '600', color: colors.primary },
     input: {
         height: 48,
         marginHorizontal: 16,
         paddingHorizontal: 12,
         fontSize: 16,
+        color: colors.text,
         borderWidth: 1,
-        borderColor: '#d8d8e2',
+        borderColor: colors.border,
         borderRadius: 10,
     },
-    hint: { fontSize: 13, color: '#6b6b7a', marginHorizontal: 16, marginTop: 8 },
-    hintError: { color: '#c0392b' },
+    hint: { fontSize: 13, color: colors.muted, marginHorizontal: 16, marginTop: 8 },
+    hintError: { color: colors.danger },
     buttons: { flexDirection: 'row', gap: 8, padding: 16 },
     button: {
         flex: 1,
@@ -155,9 +158,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    cancelButton: { backgroundColor: '#ececf2' },
-    cancelText: { fontSize: 15, fontWeight: '600', color: '#1c1c28' },
-    saveButton: { backgroundColor: '#4a4ae0' },
-    saveText: { fontSize: 15, fontWeight: '600', color: '#fff' },
+    cancelButton: { backgroundColor: colors.divider },
+    cancelText: { fontSize: 15, fontWeight: '600', color: colors.text },
+    saveButton: { backgroundColor: colors.primary },
+    saveText: { fontSize: 15, fontWeight: '600', color: colors.onPrimary },
     disabled: { opacity: 0.4 },
 });

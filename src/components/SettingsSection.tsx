@@ -1,3 +1,4 @@
+import { colors } from '@/domain/theme';
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -18,12 +19,12 @@ export function SettingsSection({ title, children }: Props) {
 const styles = StyleSheet.create({
     title: {
         fontSize: 13,
-        color: '#6b6b7a',
+        color: colors.muted,
         paddingHorizontal: 4,
         paddingBottom: 8,
     },
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: colors.card,
         borderRadius: 14,
         overflow: 'hidden',
     },

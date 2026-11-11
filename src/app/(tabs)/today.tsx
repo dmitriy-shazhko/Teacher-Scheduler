@@ -3,6 +3,7 @@ import { NowCard } from '@/components/NowCard';
 import { Screen } from '@/components/Screen';
 import { formatDateRu, toDateString } from '@/domain/dates';
 import { formatDuration, getCurrentAndNextLessons, lessonIsPassed } from '@/domain/schedule';
+import { colors } from '@/domain/theme';
 import { useLessonStore } from '@/store/lessonsStore';
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -104,11 +105,11 @@ export default function TodayScreen() {
 
 const styles = StyleSheet.create({
     date: {
-        color: '#888',
+        color: colors.muted,
         marginBottom: 16,
     },
     empty: {
-        color: '#888',
+        color: colors.muted,
         fontSize: 18,
         textAlign: 'center',
         marginTop: 12,
@@ -118,5 +119,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
         marginBottom: 8,
+        color: colors.text,
     },
 });

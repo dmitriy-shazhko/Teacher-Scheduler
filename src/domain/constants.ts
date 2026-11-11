@@ -46,5 +46,3 @@ export const SETTING_LIMITS: Record<keyof AppSettings, { min: number; max: numbe
     lessonEndingMinutes: { min: 1, max: 360 },
     lessonDurationMinutes: { min: 5, max: 360 },
 };
-
-export const COLOR_DANGER = '#c0392b';

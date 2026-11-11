@@ -112,8 +112,8 @@ test/           jest globalSetup, helpers, общие тесты
   `;`, trailing comma. `StyleSheet.create` в конце файла, один компонент = один файл.
 - Константы — в `src/domain/constants.ts`, цвета — в `src/domain/theme.ts` (`colors`):
   акцент `#4f46e5`, фон `#f4f5fb`, текст `#1a1a2e`, вторичный `#6b7088`, удаление
-  `#dc2626`, бейдж «Отменён» `#fdf0c4`/`#92400e`. Хардкод цветов в новом коде не
-  добавлять; легаси (`NowCard`, `Settings*`, `BatteryHint`, `COLOR_DANGER`) — в
+  `#dc2626`, бейдж «Отменён» `#fdf0c4`/`#92400e`. Хардкод цветов (`'#...'`, `'white'`,
+  `rgba(...)`) запрещён — только `colors.*`; полная таблица — в
   `src/components/AGENTS.md`.
 - Заголовки/отступы вкладок даёт `Screen`; свой `paddingTop` не добавлять.
 - Машинный формат даты внутри, форматирование — только при выводе.

@@ -1,3 +1,4 @@
+import { colors } from '@/domain/theme';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export function BatteryHint() {
@@ -21,7 +22,7 @@ export function BatteryHint() {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#fff4e0',
+        backgroundColor: colors.warnBg,
         borderRadius: 14,
         padding: 16,
         gap: 8,
@@ -29,24 +30,24 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#7a4b00',
+        color: colors.warnText,
     },
     text: {
         fontSize: 14,
         lineHeight: 20,
-        color: '#7a4b00',
+        color: colors.warnText,
     },
     button: {
         marginTop: 4,
         height: 44,
         borderRadius: 10,
-        backgroundColor: '#4a4ae0',
+        backgroundColor: colors.primary,
         alignItems: 'center',
         justifyContent: 'center',
     },
     buttonText: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#fff',
+        color: colors.onPrimary,
     },
 });

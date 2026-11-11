@@ -8,6 +8,7 @@ import {
     timeToDate,
     toDateString,
 } from '@/domain/dates';
+import { colors } from '@/domain/theme';
 import { useLessonStore } from '@/store/lessonsStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -175,18 +176,19 @@ export default function LessonFormScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1 },
+    container: { flex: 1, backgroundColor: colors.bg },
     content: { padding: 16, paddingTop: 60 },
     header: { marginBottom: 16 },
-    back: { color: '#4a4ae0', fontSize: 16, marginBottom: 8 },
-    title: { fontSize: 28, fontWeight: 'bold' },
-    label: { fontWeight: '600', marginBottom: 4, marginTop: 12 },
+    back: { color: colors.primary, fontSize: 16, marginBottom: 8 },
+    title: { fontSize: 28, fontWeight: 'bold', color: colors.text },
+    label: { fontWeight: '600', marginBottom: 4, marginTop: 12, color: colors.text },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: colors.border,
         borderRadius: 8,
         padding: 10,
         fontSize: 16,
+        color: colors.text,
     },
     multiline: { minHeight: 80, textAlignVertical: 'top' },
     row: { flexDirection: 'row', gap: 12 },
@@ -197,12 +199,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 16,
     },
-    switchLabel: { fontSize: 16 },
+    switchLabel: { fontSize: 16, color: colors.text },
     saveButton: {
-        backgroundColor: '#4a4ae0',
+        backgroundColor: colors.primary,
         padding: 14,
         borderRadius: 8,
         marginTop: 24,
     },
-    saveText: { color: 'white', fontWeight: '600', textAlign: 'center', fontSize: 16 },
+    saveText: { color: colors.onPrimary, fontWeight: '600', textAlign: 'center', fontSize: 16 },
 });

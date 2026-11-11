@@ -52,5 +52,5 @@ const styles = StyleSheet.create({
     selected: { backgroundColor: colors.primary, borderColor: colors.primary },
     name: { fontSize: 12, fontWeight: '700', color: colors.text },
     num: { fontSize: 16, fontWeight: '700', color: colors.text, marginTop: 2 },
-    onPrimary: { color: '#fff' },
+    onPrimary: { color: colors.onPrimary },
 });

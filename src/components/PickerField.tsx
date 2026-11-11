@@ -1,3 +1,4 @@
+import { colors } from '@/domain/theme';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
@@ -31,12 +32,12 @@ export function PickerField({ label, mode, value, onChange, display }: Props) {
 }
 
 const styles = StyleSheet.create({
-    label: { fontWeight: '600', marginBottom: 4, marginTop: 12 },
+    label: { fontWeight: '600', marginBottom: 4, marginTop: 12, color: colors.text },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: colors.border,
         borderRadius: 8,
         padding: 10,
     },
-    text: { fontSize: 16 },
+    text: { fontSize: 16, color: colors.text },
 });

@@ -8,7 +8,7 @@ type Variant = 'light' | 'danger' | 'primary';
 const THEME = {
     light: { bg: colors.card, fg: colors.primary, radius: 12 },
     danger: { bg: colors.dangerBg, fg: colors.danger, radius: 12 },
-    primary: { bg: colors.primary, fg: '#fff', radius: 22 },
+    primary: { bg: colors.primary, fg: colors.onPrimary, radius: 22 },
 };
 
 interface Props {

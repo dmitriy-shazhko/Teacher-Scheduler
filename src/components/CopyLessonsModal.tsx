@@ -1,4 +1,5 @@
 import { formatWeek, toDateString } from '@/domain/dates';
+import { colors } from '@/domain/theme';
 import { CopyLessonsSource } from '@/domain/types';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -54,27 +55,27 @@ export function CopyLessonsModal({
 }
 
 const styles = StyleSheet.create({
-    empty: { color: '#888', marginBottom: 4 },
+    empty: { color: colors.muted, marginBottom: 4 },
     backdrop: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.4)',
+        backgroundColor: colors.overlay,
         justifyContent: 'center',
         padding: 24,
     },
-    sheet: { backgroundColor: 'white', borderRadius: 12, padding: 16 },
-    sheetTitle: { fontSize: 20, fontWeight: 'bold' },
-    sheetSub: { color: '#666', marginTop: 4, marginBottom: 12 },
+    sheet: { backgroundColor: colors.card, borderRadius: 12, padding: 16 },
+    sheetTitle: { fontSize: 20, fontWeight: 'bold', color: colors.text },
+    sheetSub: { color: colors.muted, marginTop: 4, marginBottom: 12 },
     sourceRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 14,
         borderRadius: 8,
-        backgroundColor: '#eef',
+        backgroundColor: colors.primaryTint,
         marginBottom: 8,
     },
     sourceRowBusy: { opacity: 0.5 },
-    sourceText: { fontSize: 16, fontWeight: '600' },
-    sourceCount: { color: '#555' },
+    sourceText: { fontSize: 16, fontWeight: '600', color: colors.text },
+    sourceCount: { color: colors.muted },
     cancel: { padding: 12, marginTop: 4 },
-    cancelText: { textAlign: 'center', color: '#4a4ae0', fontWeight: '600' },
+    cancelText: { textAlign: 'center', color: colors.primary, fontWeight: '600' },
 });

@@ -1,4 +1,5 @@
 import { formatShort, toDateString } from '@/domain/dates';
+import { colors } from '@/domain/theme';
 import { Lesson } from '@/domain/types';
 import { useLessonActions } from '@/hooks/useLessonActions';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 6,
     },
-    dayTitle: { fontSize: 16, fontWeight: '700', marginBottom: 6 },
-    empty: { color: '#888', marginBottom: 4 },
-    plus: { fontSize: 24, color: '#4a4ae0' },
+    dayTitle: { fontSize: 16, fontWeight: '700', marginBottom: 6, color: colors.text },
+    empty: { color: colors.muted, marginBottom: 4 },
+    plus: { fontSize: 24, color: colors.primary },
 });

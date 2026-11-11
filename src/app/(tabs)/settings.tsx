@@ -5,8 +5,9 @@ import { OptionPickerModal } from '@/components/OptionPickerModal';
 import { Screen } from '@/components/Screen';
 import { SettingsRow } from '@/components/SettingsRow';
 import { SettingsSection } from '@/components/SettingsSection';
-import { COLOR_DANGER, SETTING_LIMITS, SETTING_OPTIONS } from '@/domain/constants';
+import { SETTING_LIMITS, SETTING_OPTIONS } from '@/domain/constants';
 import { formatDuration } from '@/domain/schedule';
+import { colors } from '@/domain/theme';
 import { AppSettings } from '@/domain/types';
 import { useNotificationPermission } from '@/hooks/useNotificationPermission';
 import { ensureNotificationPermission } from '@/notifications/permissions';
@@ -70,7 +71,7 @@ export default function SettingsScreen() {
                         label='Разрешение на уведомления'
                         value={permissionValue}
                         valueColor={
-                            status === 'canAsk' || status === 'blocked' ? COLOR_DANGER : undefined
+                            status === 'canAsk' || status === 'blocked' ? colors.danger : undefined
                         }
                         onPress={
                             status === 'canAsk' || status === 'blocked'
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: '700',
-        color: '#1c1c28',
+        color: colors.text,
         paddingHorizontal: 4,
         paddingTop: 12,
     },

@@ -12,7 +12,7 @@
 | --- | --- | --- |
 | `Screen.tsx` | `title`, `children`, `rightBlock?`, `onBack?` | Каркас экрана: фон `colors.bg`, поля 16, `paddingTop = insets.top + TOP_GAP` (28), заголовок 28 px bold. `rightBlock` — элемент справа от заголовка (обычно `IconButton`); `onBack` рисует над заголовком «‹ Назад» |
 | `LessonCard.tsx` | `lesson: Lesson` | Карточка урока строкой: колонка времени (начало 16 px bold, конец 12 px), цветная полоса слева, класс + `каб. N` (или «кабинет не указан»), тема, если есть. Нажатие — `openLesson(id)`, корзина `IconButton variant='danger'` — `confirmRemove(id)`. Отменённый: начало зачёркнуто, полоса `colors.barMuted`, бейдж «Отменён». `key` задаёт родитель |
-| `NowCard.tsx` | `label`, `hint`, `lesson`, `accent?` | Крупная карточка текущего/следующего урока, нажатие — `openLesson`. `accent` — зелёная рамка/подпись `#498d1c` |
+| `NowCard.tsx` | `label`, `hint`, `lesson`, `accent?` | Крупная карточка текущего/следующего урока, нажатие — `openLesson`. `accent` — зелёная рамка/подпись `colors.success` |
 | `DayCard.tsx` | `name`, `day: Date`, `lessons: Lesson[]` | Легаси: заголовок «Понедельник, 5 окт», «＋» и список `LessonCard`. Экран «Неделя» им больше не пользуется (`DayStrip` + список выбранного дня); удалить, когда пропадёт последний потребитель |
 | `IconButton.tsx` | `icon`, `label`, `onPress`, `variant?: 'light' \| 'danger' \| 'primary'` | Квадратная кнопка-иконка 44×44 (Feather); `label` уходит в `accessibilityLabel`. `light` — карточка + акцент, `danger` — красная на `dangerBg`, `primary` — белая на акценте. Использовать вместо самодельных `Pressable` с иконкой |
 | `DayStrip.tsx` | `weekStart: Date`, `selected: number`, `todayIndex: number`, `onSelect(i)` | Ряд из 7 пилюль «Пн / 5»: сегодня — `primaryTint` + рамка, выбранный день — `primary` с белым текстом; `todayIndex = -1`, если сегодня не на этой неделе |
@@ -22,7 +22,7 @@
 | `SettingsSection.tsx` | `title`, `children` | Заголовок секции + белая карточка со скруглением 14 |
 | `SettingsRow.tsx` | `label`, `value`, `valueColor?`, `isLast?`, `onPress?` | Строка «подпись — значение»; без `onPress` неактивна; разделитель, кроме последней |
 | `OptionPickerModal.tsx` | `title`, `options`, `selected`, `min`, `max`, `onSelect`, `onClose` | Список вариантов с галочкой + «Своё значение…» (цифры, ≤3 знаков, проверка `min..max`); сохранение неактивно при ошибке |
-| `BatteryHint.tsx` | — | Оранжевая карточка `#fff4e0`/`#7a4b00` про ограничения батареи и кнопка `Linking.openSettings()` |
+| `BatteryHint.tsx` | — | Карточка `colors.warnBg`/`colors.warnText` про ограничения батареи и кнопка `Linking.openSettings()` |
 
 ## Палитра
 
@@ -31,20 +31,26 @@
 
 | Ключ | Цвет | Где |
 | --- | --- | --- |
-| `bg` | `#f4f5fb` | фон экранов (`Screen`) |
-| `card` | `#ffffff` | карточки, tab bar |
+| `bg` | `#f4f5fb` | фон экранов (`Screen`, форма урока) |
+| `card` | `#ffffff` | карточки, tab bar, окна `Modal` |
 | `text` | `#1a1a2e` | заголовки и основной текст |
-| `muted` | `#6b7088` | вторичный текст, подписи |
-| `primary` | `#4f46e5` | акцент: кнопки, активная вкладка, полоса урока |
-| `primaryTint` / `primaryBorder` | `#eef0ff` / `#c7c9f5` | «сегодня» в `DayStrip` |
-| `divider` | `#eceef6` | разделители, border tab bar |
-| `danger` / `dangerBg` | `#dc2626` / `#fdeeee` | удаление (корзина) |
-| `warnBg` / `warnText` | `#fdf0c4` / `#92400e` | бейдж «Отменён» |
+| `muted` | `#6b7088` | вторичный текст, подписи, пустые состояния |
+| `primary` | `#4f46e5` | акцент: кнопки, активная вкладка, полоса урока, ссылки |
+| `onPrimary` | `#ffffff` | текст/иконка на акцентном фоне |
+| `primaryTint` / `primaryBorder` | `#eef0ff` / `#c7c9f5` | «сегодня» в `DayStrip`, фон строк в `CopyLessonsModal` |
+| `divider` | `#eceef6` | разделители, border tab bar, вторичная кнопка |
+| `border` | `#d8d8e2` | рамки полей ввода (`PickerField`, `TextInput`) |
+| `danger` / `dangerBg` | `#dc2626` / `#fdeeee` | удаление (корзина), «Не выдано», ошибка ввода |
+| `dangerMuted` | `#a03535` | красная подсказка в акцентной `NowCard` |
+| `warnBg` / `warnText` | `#fdf0c4` / `#92400e` | бейдж «Отменён», `BatteryHint` |
+| `success` | `#498d1c` | зелёный акцент текущего урока (`NowCard`) |
+| `warning` | `#cf9801` | подпись `NowCard` («Текущий / Следующий урок») |
+| `info` | `#056ccc` | класс и кабинет в `NowCard` |
 | `barMuted` | `#cfd2e0` | полоса отменённого урока |
+| `overlay` | `rgba(0, 0, 0, 0.4)` | подложка `Modal` |
 
-Ещё не переведены на `theme.ts` (TODO п. 1): `NowCard` (подпись `#cf9801`, accent
-`#498d1c`, hint `#a03535`), `Settings*`/`BatteryHint` (`#fff4e0` / `#7a4b00`) и
-`COLOR_DANGER` (`#c0392b`) для «Не выдано».
+Все компоненты и экраны переведены на `theme.ts`; `COLOR_DANGER` из `constants.ts`
+удалён — используйте `colors.danger`.
 
 ## Правила
 

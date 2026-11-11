@@ -52,6 +52,7 @@ description: Компоненты и экраны Scheduler — именован
 ```tsx
 // src/components/LessonCard.tsx
 import { useLessonActions } from '@/hooks/useLessonActions';
+import { colors } from '@/domain/theme';
 import type { Lesson } from '@/domain/types';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
@@ -77,7 +78,7 @@ export function LessonCard({ lesson }: Props) {
             <Text style={[styles.main, lesson.cancelled && styles.cancelledText]}>
                 {lesson.className}, кабинет {lesson.room}
             </Text>
-            <Text style={lesson.cancelled && styles.cancelledText}>
+            <Text style={[styles.topic, lesson.cancelled && styles.cancelledText]}>
                 {lesson.topic || 'тема не указана'}
             </Text>
         </Pressable>
@@ -88,16 +89,18 @@ const styles = StyleSheet.create({
     card: {
         padding: 12,
         borderRadius: 8,
-        backgroundColor: '#fff',
+        backgroundColor: colors.card,
         marginBottom: 12,
     },
+    time: { fontSize: 16, fontWeight: '700', color: colors.text },
+    main: { fontSize: 15, fontWeight: '600', color: colors.text },
+    topic: { fontSize: 13, color: colors.muted },
     cancelled: {
-        backgroundColor: '#cfcfcf',
+        backgroundColor: colors.warnBg,
     },
     cancelledText: {
-        color: '#8f8f8f',
+        color: colors.warnText,
     },
-    // остальные стили...
 });
 ```
 
@@ -110,12 +113,12 @@ const styles = StyleSheet.create({
 
 ```tsx
 // плохо: вызов спрятан в теге
-<Pressable onPress={() => openLesson(lesson.id)} />
+<Pressable onPress={() => openLesson(lesson.id)} />;
 
 // хорошо: у действия есть имя
 const handlePress = () => openLesson(lesson.id);
 
-<Pressable onPress={handlePress} />
+<Pressable onPress={handlePress} />;
 ```
 
 Правила:
@@ -156,20 +159,25 @@ export default function WeekScreen() {
 
 ## Палитра
 
-| Назначение                         | Цвет                              |
-| ---------------------------------- | --------------------------------- |
-| Акцент (кнопки, ссылки, значения)  | `#4a4ae0`                         |
-| Фон экранов-вкладок                | `#f4f4f8`                         |
-| Заголовки/основной текст           | `#1c1c28`                         |
-| Вторичный серый                    | `#888`, `#6b6b7a`                 |
-| Класс в карточке урока             | `#056ccc`                         |
-| Отменённый урок                    | фон `#cfcfcf`, текст `#8f8f8f`    |
-| Ошибка / «Не выдано»               | `#c0392b`                         |
-| Предупреждение                     | `#fff4e0` / `#7a4b00`             |
-| `NowCard`: подпись / accent / hint | `#cf9801` / `#498d1c` / `#a03535` |
+| Назначение                         | Ключ палитры                                                  |
+| ---------------------------------- | ------------------------------------------------------------- |
+| Акцент (кнопки, ссылки, значения)  | `colors.primary`                                              |
+| Текст/иконка на акценте            | `colors.onPrimary`                                            |
+| Фон экранов                        | `colors.bg`                                                   |
+| Карточки, окна `Modal`             | `colors.card`                                                 |
+| Заголовки / основной текст         | `colors.text`                                                 |
+| Вторичный серый                    | `colors.muted`                                                |
+| Разделители                        | `colors.divider`                                              |
+| Рамки полей ввода                  | `colors.border`                                               |
+| Ошибка / «Не выдано»               | `colors.danger`                                               |
+| Предупреждение                     | `colors.warnBg` / `colors.warnText`                           |
+| `NowCard`: подпись / accent / hint | `colors.warning` / `colors.success` / `colors.dangerMuted`    |
+| Класс в карточке урока             | `colors.info`                                                 |
+| Отменённый урок                    | `colors.barMuted` + бейдж `colors.warnBg` / `colors.warnText` |
+| Подложка `Modal`                   | `colors.overlay`                                              |
 
-Цвета-константы (например, `COLOR_DANGER`) живут в `src/domain/constants.ts`, а не
-размазаны по компонентам. Полная таблица и поведение компонентов —
+Все цвета — только из `@/domain/theme` (`colors`); хардкод `'#...'`, `'white'` и
+`rgba(...)` в компонентах запрещён. Полная таблица и поведение компонентов —
 `src/components/AGENTS.md`.
 
 ## Грабли React Native

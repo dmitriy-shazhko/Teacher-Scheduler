@@ -1,3 +1,4 @@
+import { colors } from '@/domain/theme';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 interface Props {
@@ -33,16 +34,16 @@ const styles = StyleSheet.create({
     },
     divider: {
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#ececf2',
+        borderBottomColor: colors.divider,
     },
     label: {
         flex: 1,
         fontSize: 16,
-        color: '#1c1c28',
+        color: colors.text,
     },
     value: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#4a4ae0',
+        color: colors.primary,
     },
 });

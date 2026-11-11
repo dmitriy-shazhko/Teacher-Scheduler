@@ -9,7 +9,7 @@
 | Файл | Содержимое |
 | --- | --- |
 | `types.ts` | `Lesson`, `CopyLessonsSource`, `CurrentAndNextLessons`, `StatusKind`, `StatusStep`, `AppSettings`, `PermissionStatus` |
-| `constants.ts` | `WEEKDAYS`, `MONTHS`, `SCHEDULER_WINDOW_DAYS = 7`, `DEFAULT_SETTINGS`, `SETTING_OPTIONS`, `SETTING_LIMITS`, `COLOR_DANGER` |
+| `constants.ts` | `WEEKDAYS`, `MONTHS`, `SCHEDULER_WINDOW_DAYS = 7`, `DEFAULT_SETTINGS`, `SETTING_OPTIONS`, `SETTING_LIMITS` |
 | `dates.ts` | Арифметика и форматирование дат/времени в локальном времени |
 | `schedule.ts` | `toMinutes`, `getCurrentAndNextLessons`, `getNextLessonOfDay`, `lessonIsPassed`, `formatDuration` |
 | `notificationTexts.ts` | `buildEndingText`, `buildNextLessonText`, `buildCurrentLessonText` |
@@ -157,28 +157,34 @@ interface AppSettings {
 
 ```ts
 export const colors = {
-    bg: '#f4f5fb',          // фон экранов
-    card: '#ffffff',        // карточки, tab bar
-    text: '#1a1a2e',        // заголовки и основной текст
-    muted: '#6b7088',       // вторичный текст
-    primary: '#4f46e5',     // акцент, активная вкладка, полоса урока
-    primaryTint: '#eef0ff', // фон «сегодня» в DayStrip
+    bg: '#f4f5fb',           // фон экранов
+    card: '#ffffff',         // карточки, tab bar, поля ввода
+    text: '#1a1a2e',         // заголовки и основной текст
+    muted: '#6b7088',        // вторичный текст, подписи
+    primary: '#4f46e5',      // акцент, активная вкладка, полоса урока
+    onPrimary: '#ffffff',    // текст/иконка на акцентном фоне
+    primaryTint: '#eef0ff',  // фон «сегодня» в DayStrip
     primaryBorder: '#c7c9f5',
-    divider: '#eceef6',     // разделители, borderTop tab bar
-    danger: '#dc2626',      // удаление
+    divider: '#eceef6',      // разделители, borderTop tab bar
+    border: '#d8d8e2',       // рамки полей ввода
+    danger: '#dc2626',       // удаление, «Не выдано»
     dangerBg: '#fdeeee',
-    warnBg: '#fdf0c4',      // бейдж «Отменён»
+    dangerMuted: '#a03535',  // красная подсказка (NowCard accent)
+    warnBg: '#fdf0c4',       // бейдж «Отменён», BatteryHint
     warnText: '#92400e',
-    barMuted: '#cfd2e0',    // полоса отменённого урока
+    success: '#498d1c',      // зелёный акцент текущего урока (NowCard)
+    warning: '#cf9801',      // подпись NowCard
+    info: '#056ccc',         // класс/кабинет в NowCard
+    barMuted: '#cfd2e0',     // полоса отменённого урока
+    overlay: 'rgba(0, 0, 0, 0.4)', // подложка Modal
 };
 ```
 
-- Это **единственный** источник цветов для компонентов: импорт `@/domain/theme`,
-  хардкод `'#...'` в новом коде запрещён. Легаси-исключения (`NowCard`, `Settings*`,
-  `BatteryHint`, `COLOR_DANGER` в `constants.ts`) переводятся постепенно (TODO п. 1).
+- Это **единственный** источник цветов: импорт `@/domain/theme`, хардкод `'#...'`,
+  `'white'`, `'black'` и `rgba(...)` в коде приложения запрещён. Все компоненты и экраны
+  переведены на `colors` (бывший `COLOR_DANGER` удалён — используйте `colors.danger`).
 - `theme.ts` — просто объект, ни от чего не зависит; `react-native` сюда не импортировать.
-- `COLOR_DANGER = '#c0392b'` в `constants.ts` остался для экрана настроек и не совпадает
-  с `colors.danger`; новый код берёт `colors.danger`.
+- Новая роль цвета → новый ключ в `theme.ts`, а не локальная константа в компоненте.
 
 ## Тесты
 Лежат рядом: `dates.test.ts`, `schedule.test.ts`, `notificationTexts.test.ts`,

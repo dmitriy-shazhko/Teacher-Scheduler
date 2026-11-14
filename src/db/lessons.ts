@@ -90,24 +90,30 @@ export async function deleteLesson(db: SQLiteDatabase, id: number): Promise<void
 
 // копирует уроки из недели sourceMonday в неделю targetMonday
 // отменённые уроки пропускаются
+// возвращает даты (ГГГГ-ММ-ДД) добавленных уроков
 export async function copyWeek(
     db: SQLiteDatabase,
     sourceMonday: Date,
     targetMonday: Date,
-): Promise<void> {
+): Promise<string[]> {
     const source = await getLessonsForWeek(db, sourceMonday);
+    const copiedDates: string[] = [];
 
     await db.withTransactionAsync(async () => {
         for (const lesson of source) {
             if (lesson.cancelled) continue;
             const offset = daysBetween(sourceMonday, parseDate(lesson.date));
+            const date = toDateString(addDays(targetMonday, offset));
             await addLesson(db, {
                 ...lesson,
-                date: toDateString(addDays(targetMonday, offset)),
+                date,
                 cancelled: false,
             });
+            copiedDates.push(date);
         }
     });
+
+    return copiedDates;
 }
 
 export async function getLessonById(db: SQLiteDatabase, id: number): Promise<Lesson | null> {

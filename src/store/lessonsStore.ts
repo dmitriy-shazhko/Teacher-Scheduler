@@ -19,7 +19,7 @@ type State = {
     loadToday: (db: SQLiteDatabase) => Promise<void>;
     removeLesson: (db: SQLiteDatabase, id: number) => Promise<void>;
     saveLesson: (db: SQLiteDatabase, id: number | null, data: Omit<Lesson, 'id'>) => Promise<void>;
-    copyWeek: (db: SQLiteDatabase, source: Date, target: Date) => Promise<void>;
+    copyWeek: (db: SQLiteDatabase, source: Date, target: Date) => Promise<string[]>;
 };
 
 export const useLessonStore = create<State>((set, get) => {
@@ -59,8 +59,10 @@ export const useLessonStore = create<State>((set, get) => {
         },
 
         copyWeek: async (db, source, target) => {
-            await dbCopyWeek(db, source, target);
+            const copiedDates = await dbCopyWeek(db, source, target);
             await refresh(db);
+
+            return copiedDates;
         },
     };
 });

@@ -18,7 +18,8 @@
 - `removeLesson(db, id)` — удаляет, затем `refresh`;
 - `saveLesson(db, id | null, data)` — `addLesson` при `id === null`, иначе
   `updateLesson`, затем `refresh`;
-- `copyWeek(db, source, target)` — копирует и вызывает `refresh`.
+- `copyWeek(db, source, target)` — копирует, вызывает `refresh` и возвращает даты
+  (`ГГГГ-ММ-ДД`) добавленных уроков (экран «Неделя» выбирает по ним день).
 
 Внутренний `refresh(db)`:
 

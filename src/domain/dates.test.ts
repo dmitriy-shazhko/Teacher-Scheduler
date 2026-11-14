@@ -6,6 +6,7 @@ import {
     formatDateRu,
     formatShort,
     formatWeek,
+    nearestWeekdayIndex,
     parseDate,
     startOfWeek,
     timeToDate,
@@ -92,6 +93,49 @@ describe('daysBetween', () => {
         ['через переход на летнее время (23-часовые сутки)', '2026-03-28', '2026-03-30', 2],
     ])('%s', (_title, a, b, expected) => {
         expect(daysBetween(parseDate(a), parseDate(b))).toBe(expected);
+    });
+});
+
+describe('nearestWeekdayIndex', () => {
+    const today = new Date(2026, 9, 7); // среда
+
+    it('возвращает -1 для пустого списка', () => {
+        expect(nearestWeekdayIndex([], today)).toBe(-1);
+    });
+
+    it('находит единственную дату', () => {
+        expect(nearestWeekdayIndex(['2026-10-05'], today)).toBe(0);
+    });
+
+    it('возвращает сегодняшний день, если он есть в списке', () => {
+        expect(nearestWeekdayIndex(['2026-10-07'], today)).toBe(2);
+    });
+
+    it('возвращает воскресенье как 6', () => {
+        expect(nearestWeekdayIndex(['2026-10-11'], today)).toBe(6);
+    });
+
+    it('выбирает прошлый день, если он ближе будущего', () => {
+        expect(nearestWeekdayIndex(['2026-10-06', '2026-10-10'], today)).toBe(1);
+    });
+
+    it('при равном расстоянии выбирает будущий день', () => {
+        expect(nearestWeekdayIndex(['2026-10-06', '2026-10-08'], today)).toBe(3);
+        expect(nearestWeekdayIndex(['2026-10-05', '2026-10-09'], today)).toBe(4);
+    });
+
+    it('сравнивает даты соседних недель', () => {
+        expect(nearestWeekdayIndex(['2026-09-30', '2026-10-12'], today)).toBe(0);
+    });
+
+    it('время суток в today не влияет на выбор', () => {
+        const lateEvening = new Date(2026, 9, 7, 23, 50);
+
+        expect(nearestWeekdayIndex(['2026-10-06', '2026-10-08'], lateEvening)).toBe(3);
+    });
+
+    it('учитывает переход на зимнее время как один день', () => {
+        expect(nearestWeekdayIndex(['2026-10-25', '2026-10-27'], new Date(2026, 9, 26))).toBe(1);
     });
 });
 

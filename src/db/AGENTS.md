@@ -54,7 +54,7 @@ CREATE INDEX idx_lessons_date ON lessons(date);
 | `addLesson(db, lesson: Omit<Lesson, 'id'>)` | INSERT |
 | `updateLesson(db, id, lesson)` | UPDATE только этой записи |
 | `deleteLesson(db, id)` | Физическое удаление |
-| `copyWeek(db, sourceMonday, targetMonday)` | Копирование недели в транзакции |
+| `copyWeek(db, sourceMonday, targetMonday)` | Копирование недели в транзакции; возвращает даты добавленных уроков |
 
 Важные детали:
 
@@ -63,7 +63,8 @@ CREATE INDEX idx_lessons_date ON lessons(date);
 - Для планировщика нужен `getLessonsForRange` (окно 8 календарных дат), а не
   `getLessonsForWeek`: неделя может кончиться в середине окна.
 - `copyWeek` копирует со сдвигом по дню недели (`daysBetween`), **пропускает отменённые**,
-  темы сохраняет, выполняет всё в `withTransactionAsync`.
+  темы сохраняет, выполняет всё в `withTransactionAsync`, возвращает даты
+  (`ГГГГ-ММ-ДД`) добавленных уроков — по ним экран «Неделя» выбирает день после копирования.
 - `deleteLesson` удаляет физически; «отменённый» урок остаётся в БД с `cancelled = 1`.
 - При добавлении поля: обновить `LessonRow`, `rowToLesson`, SQL в `addLesson`/
   `updateLesson`, тип `Lesson`, миграцию и тесты.

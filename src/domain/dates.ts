@@ -27,6 +27,27 @@ export function daysBetween(a: Date, b: Date): number {
     return Math.round((b.getTime() - a.getTime()) / 86400000);
 }
 
+// индекс дня недели (0 = понедельник) даты из списка, ближайшей к today;
+// -1, если список пуст. При равном расстоянии выбирается будущий день.
+export function nearestWeekdayIndex(dates: string[], today: Date): number {
+    const todayStr = toDateString(today);
+    let best = '';
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    for (const date of dates) {
+        const distance = Math.abs(daysBetween(parseDate(todayStr), parseDate(date)));
+
+        if (distance < bestDistance || (distance === bestDistance && date > best)) {
+            best = date;
+            bestDistance = distance;
+        }
+    }
+
+    if (!best) return -1;
+
+    return (parseDate(best).getDay() + 6) % 7;
+}
+
 export function formatShort(d: Date): string {
     return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
 }

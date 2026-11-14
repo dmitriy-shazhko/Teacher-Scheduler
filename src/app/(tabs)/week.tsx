@@ -6,7 +6,13 @@ import { Screen } from '@/components/Screen';
 import { WeekSwitcher } from '@/components/WeekSwitcher';
 import { countLessonsForWeek } from '@/db/lessons';
 import { MONTHS, WEEKDAYS } from '@/domain/constants';
-import { addDays, formatWeek, startOfWeek, toDateString } from '@/domain/dates';
+import {
+    addDays,
+    formatWeek,
+    nearestWeekdayIndex,
+    startOfWeek,
+    toDateString,
+} from '@/domain/dates';
 import { pluralLessons } from '@/domain/textFormaters';
 import { colors } from '@/domain/theme';
 import { CopyLessonsSource } from '@/domain/types';
@@ -68,8 +74,11 @@ export default function WeekScreen() {
         if (isCopying) return;
         setIsCopying(true);
         try {
-            await copyWeek(db, source, weekStart);
+            const copiedDates = await copyWeek(db, source, weekStart);
             setCopyOpen(false);
+            // показываем день, где появились уроки, ближайший к сегодняшнему
+            const nearest = nearestWeekdayIndex(copiedDates, new Date());
+            if (nearest >= 0) setSelected(nearest);
         } finally {
             setIsCopying(false);
         }

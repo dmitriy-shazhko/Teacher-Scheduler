@@ -1,8 +1,10 @@
 import {
+    dayTimeRange,
     formatDuration,
     getCurrentAndNextLessons,
     getNextLessonOfDay,
     lessonIsPassed,
+    sortDayLessons,
     toMinutes,
     weekLessonDays,
 } from '@/domain/schedule';
@@ -259,5 +261,81 @@ describe('weekLessonDays', () => {
             false,
             false,
         ]);
+    });
+});
+
+describe('sortDayLessons', () => {
+    const early = makeLesson({ id: 1, startTime: '08:30', endTime: '09:15' });
+    const late = makeLesson({ id: 2, startTime: '12:00', endTime: '12:45' });
+    const cancelledEarly = makeLesson({
+        id: 3,
+        startTime: '09:25',
+        endTime: '10:10',
+        cancelled: true,
+    });
+    const cancelledLate = makeLesson({
+        id: 4,
+        startTime: '10:20',
+        endTime: '11:05',
+        cancelled: true,
+    });
+
+    it('ставит отменённые уроки после активных', () => {
+        const result = sortDayLessons([cancelledLate, early, cancelledEarly, late]);
+
+        expect(result.map((l) => l.id)).toEqual([1, 2, 3, 4]);
+    });
+
+    it('внутри групп сохраняет порядок по времени начала', () => {
+        const result = sortDayLessons([late, early, cancelledLate, cancelledEarly]);
+
+        expect(result.map((l) => l.startTime)).toEqual(['08:30', '12:00', '09:25', '10:20']);
+    });
+
+    it('один отменённый урок уходит в конец, даже если он первый по времени', () => {
+        const result = sortDayLessons([cancelledEarly, late]);
+
+        expect(result.map((l) => l.id)).toEqual([2, 3]);
+    });
+
+    it('входной массив не меняется', () => {
+        const lessons = [cancelledLate, late, early];
+
+        sortDayLessons(lessons);
+
+        expect(lessons).toEqual([cancelledLate, late, early]);
+    });
+
+    it('пустой список — пустой результат', () => {
+        expect(sortDayLessons([])).toEqual([]);
+    });
+});
+
+describe('dayTimeRange', () => {
+    it('пустой список — null', () => {
+        expect(dayTimeRange([])).toBeNull();
+    });
+
+    it('самый ранний старт и самый поздний конец независимо от порядка', () => {
+        const lessons = [
+            makeLesson({ id: 1, startTime: '10:20', endTime: '11:05' }),
+            makeLesson({ id: 2, startTime: '08:30', endTime: '09:15' }),
+        ];
+
+        expect(dayTimeRange(lessons)).toEqual({ start: '08:30', end: '11:05' });
+    });
+
+    it('учитывает отменённые уроки', () => {
+        const lessons = [
+            makeLesson({ id: 1, startTime: '08:30', endTime: '09:15' }),
+            makeLesson({
+                id: 2,
+                startTime: '09:25',
+                endTime: '14:00',
+                cancelled: true,
+            }),
+        ];
+
+        expect(dayTimeRange(lessons)).toEqual({ start: '08:30', end: '14:00' });
     });
 });

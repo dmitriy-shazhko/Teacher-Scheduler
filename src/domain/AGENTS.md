@@ -11,7 +11,7 @@
 | `types.ts` | `Lesson`, `CopyLessonsSource`, `CurrentAndNextLessons`, `StatusKind`, `StatusStep`, `AppSettings`, `PermissionStatus` |
 | `constants.ts` | `WEEKDAYS`, `MONTHS`, `SCHEDULER_WINDOW_DAYS = 7`, `DEFAULT_SETTINGS`, `SETTING_OPTIONS`, `SETTING_LIMITS` |
 | `dates.ts` | Арифметика и форматирование дат/времени в локальном времени |
-| `schedule.ts` | `toMinutes`, `getCurrentAndNextLessons`, `getNextLessonOfDay`, `lessonIsPassed`, `formatDuration` |
+| `schedule.ts` | `toMinutes`, `getCurrentAndNextLessons`, `getNextLessonOfDay`, `lessonIsPassed`, `formatDuration`, `sortDayLessons`, `dayTimeRange`, `weekLessonDays` |
 | `notificationTexts.ts` | `buildEndingText`, `buildNextLessonText`, `buildCurrentLessonText` |
 | `statusTimeline.ts` | `buildStatusTimeline(lessons, now, settings)` → `StatusStep[]` |
 | `textFormaters.ts` | `pluralLessons(n)` — «1 урок / 2 урока / 5 уроков» |
@@ -86,6 +86,12 @@ interface AppSettings {
   уведомлений и будущих экранов.
 - `weekLessonDays(lessons, weekStart)` → `boolean[]` по дням пн–вс: есть ли в дне уроки
   (для точек в `DayStrip`). Отменённые тоже дают отметку, потому что остаются в списке дня.
+- `sortDayLessons(lessons)` — порядок списка дня: сначала активные уроки, отменённые —
+  после них; внутри каждой группы по времени начала. Возвращает новый массив, входной не
+  мутирует. Используется на экране «Неделя».
+- `dayTimeRange(lessons)` → `{ start, end }` — самый ранний старт и самый поздний конец
+  дня для сводки, порядок массива не важен; отменённые уроки учитываются. `null` для
+  пустого списка.
 - `lessonIsPassed(lesson, now)` — `end <= now`.
 - `formatDuration(minutes)` → `'35 мин'`, `'1 ч 15 мин'`, `'2 ч'`.
 

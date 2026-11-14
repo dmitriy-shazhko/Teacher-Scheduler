@@ -63,3 +63,29 @@ export function weekLessonDays(lessons: Lesson[], weekStart: Date): boolean[] {
 
     return WEEKDAYS.map((_, i) => dates.has(toDateString(addDays(weekStart, i))));
 }
+
+// порядок списка дня: сначала активные уроки, отменённые — после них;
+// внутри каждой группы — по времени начала. Входной массив не меняется.
+export function sortDayLessons(lessons: Lesson[]): Lesson[] {
+    return [...lessons].sort((a, b) => {
+        if (a.cancelled !== b.cancelled) return a.cancelled ? 1 : -1;
+
+        return toMinutes(a.startTime) - toMinutes(b.startTime);
+    });
+}
+
+// диапазон дня для сводки: самый ранний старт и самый поздний конец;
+// отменённые уроки учитываются, порядок массива не важен
+export function dayTimeRange(lessons: Lesson[]): { start: string; end: string } | null {
+    if (lessons.length === 0) return null;
+
+    let start = lessons[0].startTime;
+    let end = lessons[0].endTime;
+
+    for (const lesson of lessons) {
+        if (lesson.startTime < start) start = lesson.startTime;
+        if (lesson.endTime > end) end = lesson.endTime;
+    }
+
+    return { start, end };
+}

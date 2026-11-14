@@ -13,7 +13,7 @@ import {
     startOfWeek,
     toDateString,
 } from '@/domain/dates';
-import { weekLessonDays } from '@/domain/schedule';
+import { dayTimeRange, sortDayLessons, weekLessonDays } from '@/domain/schedule';
 import { pluralLessons } from '@/domain/textFormaters';
 import { colors } from '@/domain/theme';
 import { CopyLessonsSource } from '@/domain/types';
@@ -46,13 +46,12 @@ export default function WeekScreen() {
 
     const day = addDays(weekStart, selected);
     const dayStr = toDateString(day);
-    const dayLessons = lessons
-        .filter((l) => l.date === dayStr)
-        .sort((a, b) => a.startTime.localeCompare(b.startTime));
+    const dayLessons = sortDayLessons(lessons.filter((l) => l.date === dayStr));
+    const dayRange = dayTimeRange(dayLessons);
     const hasLessonsByDay = weekLessonDays(lessons, weekStart);
 
-    const summary = dayLessons.length
-        ? `${pluralLessons(dayLessons.length)} · ${dayLessons[0].startTime} – ${dayLessons[dayLessons.length - 1].endTime}`
+    const summary = dayRange
+        ? `${pluralLessons(dayLessons.length)} · ${dayRange.start} – ${dayRange.end}`
         : 'Уроков нет';
 
     const load = useCallback(() => loadWeek(db, weekStart), [db, weekStart, loadWeek]);

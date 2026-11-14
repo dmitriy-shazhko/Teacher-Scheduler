@@ -84,6 +84,8 @@ interface AppSettings {
 - `getNextLessonOfDay(lessons, current)` — следующий неотменённый урок **того же дня**
   после текущего. Сейчас в UI не используется (покрыт тестами); запас для текстов
   уведомлений и будущих экранов.
+- `weekLessonDays(lessons, weekStart)` → `boolean[]` по дням пн–вс: есть ли в дне уроки
+  (для точек в `DayStrip`). Отменённые тоже дают отметку, потому что остаются в списке дня.
 - `lessonIsPassed(lesson, now)` — `end <= now`.
 - `formatDuration(minutes)` → `'35 мин'`, `'1 ч 15 мин'`, `'2 ч'`.
 

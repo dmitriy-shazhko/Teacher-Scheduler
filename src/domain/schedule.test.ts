@@ -4,6 +4,7 @@ import {
     getNextLessonOfDay,
     lessonIsPassed,
     toMinutes,
+    weekLessonDays,
 } from '@/domain/schedule';
 import { makeLesson } from '../../test/helpers/lessons';
 
@@ -158,5 +159,105 @@ describe('getNextLessonOfDay', () => {
 
     it('null, если уроков после текущего нет', () => {
         expect(getNextLessonOfDay([current], current)).toBeNull();
+    });
+});
+
+describe('weekLessonDays', () => {
+    const monday = new Date(2026, 9, 5); // пн 5 – вс 11 октября 2026
+
+    it('пустая неделя — отметок нет', () => {
+        expect(weekLessonDays([], monday)).toEqual([
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+        ]);
+    });
+
+    it('отмечает дни недели, где есть уроки', () => {
+        const lessons = [
+            makeLesson({ id: 1, date: '2026-10-05' }),
+            makeLesson({ id: 2, date: '2026-10-07' }),
+            makeLesson({ id: 3, date: '2026-10-11' }),
+        ];
+
+        expect(weekLessonDays(lessons, monday)).toEqual([
+            true,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+        ]);
+    });
+
+    it('несколько уроков в одном дне дают одну отметку', () => {
+        const lessons = [
+            makeLesson({ id: 1, date: '2026-10-06' }),
+            makeLesson({ id: 2, date: '2026-10-06' }),
+            makeLesson({ id: 3, date: '2026-10-06' }),
+        ];
+
+        expect(weekLessonDays(lessons, monday)).toEqual([
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+        ]);
+    });
+
+    it('игнорирует уроки соседних недель', () => {
+        const lessons = [
+            makeLesson({ id: 1, date: '2026-10-04' }), // воскресенье прошлой недели
+            makeLesson({ id: 2, date: '2026-10-12' }), // понедельник следующей
+        ];
+
+        expect(weekLessonDays(lessons, monday)).toEqual([
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+        ]);
+    });
+
+    it('отменённый урок тоже отмечает день', () => {
+        const lessons = [makeLesson({ id: 1, date: '2026-10-08', cancelled: true })];
+
+        expect(weekLessonDays(lessons, monday)).toEqual([
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+        ]);
+    });
+
+    it('работает на неделе через границу года', () => {
+        const lessons = [
+            makeLesson({ id: 1, date: '2026-12-31' }),
+            makeLesson({ id: 2, date: '2027-01-01' }),
+        ];
+
+        expect(weekLessonDays(lessons, new Date(2026, 11, 28))).toEqual([
+            false,
+            false,
+            false,
+            true,
+            true,
+            false,
+            false,
+        ]);
     });
 });

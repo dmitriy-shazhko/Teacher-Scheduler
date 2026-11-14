@@ -15,7 +15,7 @@
 | `NowCard.tsx` | `label`, `hint`, `lesson`, `accent?` | Крупная карточка текущего/следующего урока, нажатие — `openLesson`. `accent` — зелёная рамка/подпись `colors.success` |
 | `DayCard.tsx` | `name`, `day: Date`, `lessons: Lesson[]` | Легаси: заголовок «Понедельник, 5 окт», «＋» и список `LessonCard`. Экран «Неделя» им больше не пользуется (`DayStrip` + список выбранного дня); удалить, когда пропадёт последний потребитель |
 | `IconButton.tsx` | `icon`, `label`, `onPress`, `variant?: 'light' \| 'danger' \| 'primary' \| 'ghost'`, `size?: number` | Кнопка-иконка (Feather); `label` уходит в `accessibilityLabel`. `size` — сторона квадрата, по умолчанию 44; иконка = `round(size * 0.45)` (20 при 44), радиус масштабируется от 12/22. `light` — карточка + акцент, `danger` — красная на `dangerBg`, `primary` — белая на акценте, `ghost` — прозрачный фон (тот же квадрат, для иконок внутри карточек, `WeekSwitcher`). Использовать вместо самодельных `Pressable` с иконкой |
-| `DayStrip.tsx` | `weekStart: Date`, `selected: number`, `todayIndex: number`, `onSelect(i)` | Ряд из 7 пилюль «Пн / 5»: сегодня — `primaryTint` + рамка, выбранный день — `primary` с белым текстом; `todayIndex = -1`, если сегодня не на этой неделе |
+| `DayStrip.tsx` | `weekStart: Date`, `selected: number`, `todayIndex: number`, `hasLessons: boolean[]`, `onSelect(i)` | Ряд из 7 пилюль «Пн / 5» с точкой под числом: точка `primary` — в этот день есть уроки, прозрачная — уроков нет (текст дня тогда `muted`). Сегодня — `primaryTint` + рамка, выбранный день — `primary` с белым текстом и белой точкой; `todayIndex = -1`, если сегодня не на этой неделе |
 | `WeekSwitcher.tsx` | `label`, `isCurrent`, `onPrev`, `onNext`, `onToday` | Карточка-переключатель недель высотой 44: ‹ › — `IconButton variant='ghost'` (44 px, карточка без `paddingVertical`), подпись `formatWeek`; в текущей неделе — «Текущая неделя», иначе кликабельное «К текущей неделе» |
 | `CopyLessonsModal.tsx` | `isOpen`, `targetWeekStart`, `sources`, `isBusy`, `onClose`, `pickSource` | Модальное окно выбора недели-источника; показывает диапазон и количество уроков; на время копирования строки неактивны и приглушены |
 | `PickerField.tsx` | `label`, `mode: 'date' \| 'time'`, `value: Date`, `display`, `onChange` | Системный Android-пикер через `DateTimePickerAndroid.open` |
@@ -76,6 +76,13 @@
   После правок такого места проверять на телефоне, что не срабатывают оба обработчика
   (иначе откроются и `Alert`, и форма урока).
 - Цвета — только из `@/domain/theme` (`colors`).
+- Скругления задавать **числом**, а не процентом: `borderRadius: '50%'` на Android
+  игнорируется и элемент остаётся квадратным. Для круга — радиус, равный половине
+  стороны (`DOT_SIZE / 2` в `DayStrip`).
+- На Android прозрачный фон + смена его на цветной теряет `borderRadius` (RN #52415):
+  вид с `backgroundColor: 'transparent'` не создаётся нативно, и при первом цветном фоне
+  радиус уже не передаётся. Поэтому точка в `DayStrip` монтируется только когда есть
+  уроки (высоту держит `dotSlot`), а не «перекрашивается» из прозрачной.
 - Не помещать бизнес-логику в компоненты: расчёты — в `src/domain/`, данные — из стора,
   действия — из `useLessonActions`.
 - Компоненты не должны импортировать `src/db/` и выполнять SQL.

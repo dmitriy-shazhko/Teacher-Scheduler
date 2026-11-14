@@ -1,3 +1,5 @@
+import { WEEKDAYS } from './constants';
+import { addDays, toDateString } from './dates';
 import { CurrentAndNextLessons, Lesson } from './types';
 
 export function toMinutes(time: string): number {
@@ -52,4 +54,12 @@ export function getNextLessonOfDay(lessons: Lesson[], current: Lesson): Lesson |
         .sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime));
 
     return candidates[0] ?? null;
+}
+
+// по индексу дня недели (0 = понедельник) — есть ли в этот день уроки недели
+// отменённые уроки тоже дают отметку: они остаются в списке дня
+export function weekLessonDays(lessons: Lesson[], weekStart: Date): boolean[] {
+    const dates = new Set(lessons.map((l) => l.date));
+
+    return WEEKDAYS.map((_, i) => dates.has(toDateString(addDays(weekStart, i))));
 }

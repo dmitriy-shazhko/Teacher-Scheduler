@@ -5,6 +5,7 @@ import {
     getNextLessonOfDay,
     lessonIsPassed,
     sortDayLessons,
+    timeDiff,
     toMinutes,
     weekLessonDays,
 } from '@/domain/schedule';
@@ -21,6 +22,17 @@ describe('toMinutes', () => {
         ['23:59', 1439],
     ])('%s → %i мин', (time, expected) => {
         expect(toMinutes(time)).toBe(expected);
+    });
+});
+
+describe('timeDiff', () => {
+    it.each([
+        ['08:30', '09:15', 45],
+        ['08:30', '08:30', 0],
+        ['09:15', '08:30', -45],
+        ['23:50', '23:59', 9],
+    ])('%s → %s = %i мин', (from, to, expected) => {
+        expect(timeDiff(from, to)).toBe(expected);
     });
 });
 

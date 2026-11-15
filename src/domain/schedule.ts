@@ -8,6 +8,11 @@ export function toMinutes(time: string): number {
     return h * 60 + m;
 }
 
+// разница между временами в минутах: '08:30', '09:15' -> 45
+export function timeDiff(from: string, to: string): number {
+    return toMinutes(to) - toMinutes(from);
+}
+
 export function lessonIsPassed(lesson: Lesson, now: Date): boolean {
     const nowMin = now.getHours() * 60 + now.getMinutes();
 

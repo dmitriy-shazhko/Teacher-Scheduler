@@ -13,10 +13,17 @@ export function useLessonActions() {
     const openLesson = (id: number) =>
         router.push({ pathname: '/lesson', params: { id: String(id) } });
 
-    const confirmRemove = (id: number) =>
+    const confirmRemove = (id: number, onDone?: () => void) =>
         Alert.alert('Удалить урок?', '', [
             { text: 'Отмена', style: 'cancel' },
-            { text: 'Удалить', style: 'destructive', onPress: () => removeLesson(db, id) },
+            {
+                text: 'Удалить',
+                style: 'destructive',
+                onPress: async () => {
+                    await removeLesson(db, id);
+                    onDone?.();
+                },
+            },
         ]);
 
     return { addLesson, openLesson, confirmRemove };

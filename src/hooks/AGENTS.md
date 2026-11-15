@@ -10,7 +10,8 @@
 - `addLesson` — `router.push({ pathname: '/lesson', params: { date } })`.
 - `openLesson` — `router.push({ pathname: '/lesson', params: { id: String(id) } })`.
 - `confirmRemove` — `Alert.alert` с «Отмена/Удалить», удаление через
-  `useLessonStore.removeLesson`.
+  `useLessonStore.removeLesson`; необязательный `onDone` вызывается после удаления (форма
+  урока передаёт `() => router.back()`).
 - Используется в `LessonCard`, `NowCard` и на экране «Неделя» (кнопка «＋»), чтобы не
   тащить колбэки через пропсы.
 - Требует `useSQLiteContext()` — вызывать только внутри `SQLiteProvider`.

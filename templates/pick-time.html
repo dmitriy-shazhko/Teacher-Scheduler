@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Выбор времени</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Manrope',system-ui,sans-serif}
+button,input{font:inherit;color:inherit}
+.s{width:360px;height:740px;box-sizing:border-box;background:#f4f5fb;color:#1a1a2e;position:relative;overflow:hidden;padding:24px 16px}
+h1{margin:0;font-size:28px;font-weight:800}
+.c{background:#fff;border-radius:18px}
+.tb{position:absolute;left:0;right:0;bottom:0;height:70px;background:#fff;display:flex;justify-content:space-around;align-items:center;border-top:1px solid #eceef6}
+.tb button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#6b7088;min-width:72px;min-height:44px}
+.tb .on{color:#4f46e5}
+.r{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #eceef6;font-size:14px}
+.r:last-child{border:0}.r span{color:#6b7088}.r b{font-weight:700}
+.back{background:none;border:0;color:#4f46e5;font-size:13px;padding:0 0 10px;min-height:32px}
+.pb{display:block;width:100%;height:50px;border:0;border-radius:14px;background:#4f46e5;color:#fff;font-weight:700;font-size:16px}
+.ic{width:44px;height:44px;border:0;border-radius:12px;background:#fdeeee;color:#dc2626;display:flex;align-items:center;justify-content:center}
+</style>
+</helmet>
+<div class="s">
+<div style="opacity:.4"><h1 style="margin-top:20px;color:#6b7088">Урок</h1><div class="c" style="padding:4px 16px;margin-top:12px"><div class="r"><span>Дата</span><b>19.10.2026</b></div><div class="r"><span>Время</span><b>08:30 – 09:15</b></div></div></div>
+<div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:24px 24px 0 0;padding:12px 16px 20px;box-shadow:0 -4px 20px rgba(26,26,46,.12)">
+<div style="width:40px;height:4px;border-radius:2px;background:#cfd2e0;margin:0 auto 14px"></div>
+<b style="font-size:17px">Время урока</b>
+<div style="display:flex;gap:10px;margin:12px 0"><div style="flex:1;border:1.5px solid #4f46e5;background:#eef0ff;border-radius:14px;padding:8px 12px"><div style="font-size:12px;color:#4f46e5">Начало</div><b style="font-size:20px">08:30</b></div><div style="flex:1;border:1px solid #dfe1ee;border-radius:14px;padding:8px 12px"><div style="font-size:12px;color:#6b7088">Конец</div><b style="font-size:20px">09:15</b></div></div>
+<div style="background:#f4f5fb;border-radius:16px;display:flex;justify-content:center;align-items:center;gap:36px;padding:14px;text-align:center;color:#6b7088;font-size:15px"><div style="line-height:2.1">07<div style="color:#4f46e5;font-size:26px;font-weight:800;line-height:1.5">08</div>09</div><b style="font-size:26px;color:#1a1a2e">:</b><div style="line-height:2.1">25<div style="color:#4f46e5;font-size:26px;font-weight:800;line-height:1.5">30</div>35</div></div>
+<div style="font-size:13px;color:#6b7088;margin:14px 0 8px">Длительность, мин</div>
+<div style="display:flex;gap:8px;margin-bottom:16px"><button style="flex:1;height:40px;border:0;border-radius:20px;font-weight:700;background:#eef0ff">25</button><button style="flex:1;height:40px;border:0;border-radius:20px;font-weight:700;background:#eef0ff">40</button><button style="flex:1;height:40px;border:0;border-radius:20px;font-weight:700;background:#4f46e5;color:#fff">45</button><button style="flex:1;height:40px;border:0;border-radius:20px;font-weight:700;background:#eef0ff">90</button></div>
+<button class="pb">Готово</button></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":360,"height":740}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

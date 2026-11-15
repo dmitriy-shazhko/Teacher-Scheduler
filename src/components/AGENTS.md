@@ -18,7 +18,10 @@
 | `DayStrip.tsx` | `weekStart: Date`, `selected: number`, `todayIndex: number`, `hasLessons: boolean[]`, `onSelect(i)` | Ряд из 7 пилюль «Пн / 5» с точкой под числом: точка `primary` — в этот день есть уроки, прозрачная — уроков нет (текст дня тогда `muted`). Сегодня — `primaryTint` + рамка, выбранный день — `primary` с белым текстом и белой точкой; `todayIndex = -1`, если сегодня не на этой неделе |
 | `WeekSwitcher.tsx` | `label`, `isCurrent`, `onPrev`, `onNext`, `onToday` | Карточка-переключатель недель высотой 44: ‹ › — `IconButton variant='ghost'` (44 px, карточка без `paddingVertical`), подпись `formatWeek`; в текущей неделе — «Текущая неделя», иначе кликабельное «К текущей неделе» |
 | `CopyLessonsModal.tsx` | `isOpen`, `targetWeekStart`, `sources`, `isBusy`, `onClose`, `pickSource` | Модальное окно выбора недели-источника; показывает диапазон и количество уроков; на время копирования строки неактивны и приглушены |
-| `PickerField.tsx` | `label`, `mode: 'date' \| 'time'`, `value: Date`, `display`, `onChange` | Системный Android-пикер через `DateTimePickerAndroid.open` |
+| `FormCard.tsx` | `children` | Белая карточка формы: радиус 18, горизонтальные поля 16, вертикальные 4 (как в шаблонах экрана урока) |
+| `FormRow.tsx` | `label`, `children`, `isLast?`, `isBlock?`, `onPress?` | Строка карточки формы: подпись `muted` слева, значение справа, разделитель `hairline` кроме последней. `isBlock` — подпись сверху, значение под ней (тема). С `onPress` строка становится `Pressable` (дата, время) |
+| `PickerField.tsx` | `label`, `mode: 'date' \| 'time'`, `value: Date`, `display`, `onChange`, `isLast?` | Строка `FormRow` с системным Android-пикером (`DateTimePickerAndroid.open`); на форме урока используется для даты. Экспортирует `openDateTimePicker(mode, value, onChange)` — общий хелпер для мест со своими зонами нажатия (`TimePickerModal`) |
+| `TimePickerModal.tsx` | `startTime`, `endTime`, `defaultDuration`, `onApply(start, end)`, `onClose` | Нижний лист «Время урока» (макет pick-time): карточки «Начало/Конец» — нажатие открывает системный пикер времени (`openDateTimePicker`, значения хранятся строками `ЧЧ:ММ`), кнопки длительности и «Готово». При смене начала конец сдвигается на текущую длительность (или `defaultDuration`). Кнопки — `SETTING_OPTIONS.lessonDurationMinutes` плюс дефолт из настроек и фактическая длительность урока, если их нет в списке (иначе подсветить нечего); активна та, что равна `timeDiff(draftStart, draftEnd)`. Подложка появляется сразу, шторка выезжает сама (`Animated.Value` + `translateY`, `animationType='none'`), закрытие — с обратной анимацией `CLOSE_MS`. Рендерится условно (`{isTimeOpen && <TimePickerModal/>}`), поэтому черновик времени живёт в локальном состоянии |
 | `SettingsSection.tsx` | `title`, `children` | Заголовок секции + белая карточка со скруглением 14 |
 | `SettingsRow.tsx` | `label`, `value`, `valueColor?`, `isLast?`, `onPress?` | Строка «подпись — значение»; без `onPress` неактивна; разделитель, кроме последней |
 | `OptionPickerModal.tsx` | `title`, `options`, `selected`, `min`, `max`, `onSelect`, `onClose` | Список вариантов с галочкой + «Своё значение…» (цифры, ≤3 знаков, проверка `min..max`); сохранение неактивно при ошибке |
@@ -35,12 +38,14 @@
 | `card` | `#ffffff` | карточки, tab bar, окна `Modal` |
 | `text` | `#1a1a2e` | заголовки и основной текст |
 | `muted` | `#6b7088` | вторичный текст, подписи, пустые состояния |
+| `placeholder` | `#a9adc1` | подсказки незаполненных полей (`TextInput` на форме урока) — светлее `muted` |
 | `primary` | `#4f46e5` | акцент: кнопки, активная вкладка, полоса урока, ссылки |
 | `onPrimary` | `#ffffff` | текст/иконка на акцентном фоне |
 | `primaryTint` / `primaryBorder` | `#eef0ff` / `#c7c9f5` | «сегодня» в `DayStrip`, фон строк в `CopyLessonsModal` |
 | `divider` | `#eceef6` | разделители, border tab bar, вторичная кнопка |
 | `border` | `#d8d8e2` | рамки полей ввода (`PickerField`, `TextInput`) |
 | `danger` / `dangerBg` | `#dc2626` / `#fdeeee` | удаление (корзина), «Не выдано», ошибка ввода |
+| `dangerBorder` / `dangerSurface` | `#f4a5a5` / `#fff5f5` | рамка и фон кнопки «Удалить урок» на форме урока |
 | `dangerMuted` | `#a03535` | красная подсказка в акцентной `NowCard` |
 | `warnBg` / `warnText` | `#fdf0c4` / `#92400e` | бейдж «Отменён», `BatteryHint` |
 | `success` | `#498d1c` | зелёный акцент текущего урока (`NowCard`) |

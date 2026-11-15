@@ -1,15 +1,13 @@
+import { Feather } from '@expo/vector-icons';
+import { FormCard } from '@/components/FormCard';
+import { FormRow } from '@/components/FormRow';
 import { PickerField } from '@/components/PickerField';
 import { Screen } from '@/components/Screen';
+import { TimePickerModal } from '@/components/TimePickerModal';
 import { getLessonById } from '@/db/lessons';
-import {
-    addMinutesToTime,
-    dateToTime,
-    formatDateRu,
-    parseDate,
-    timeToDate,
-    toDateString,
-} from '@/domain/dates';
+import { addMinutesToTime, formatDateRu, parseDate, toDateString } from '@/domain/dates';
 import { colors } from '@/domain/theme';
+import { useLessonActions } from '@/hooks/useLessonActions';
 import { useLessonStore } from '@/store/lessonsStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -30,6 +28,7 @@ export default function LessonFormScreen() {
     const db = useSQLiteContext();
     const saveLesson = useLessonStore((s) => s.saveLesson);
     const lessonDuration = useSettingsStore((s) => s.settings.lessonDurationMinutes);
+    const { confirmRemove } = useLessonActions();
     const { id, date } = useLocalSearchParams<{ id?: string; date?: string }>();
     const isEdit = id !== undefined;
 
@@ -41,6 +40,7 @@ export default function LessonFormScreen() {
     const [topic, setTopic] = useState('');
     const [cancelled, setCancelled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isTimeOpen, setIsTimeOpen] = useState(false);
 
     // при редактировании подгружаем урок из базы
     useEffect(() => {
@@ -57,6 +57,17 @@ export default function LessonFormScreen() {
             setCancelled(lesson.cancelled);
         })();
     }, [db, id, isEdit]);
+
+    const pickDate = (d: Date) => setLessonDate(toDateString(d));
+
+    const openTime = () => setIsTimeOpen(true);
+    const closeTime = () => setIsTimeOpen(false);
+
+    const applyTime = (start: string, end: string) => {
+        setStartTime(start);
+        setEndTime(end);
+        setIsTimeOpen(false);
+    };
 
     const save = async () => {
         if (isSaving) return;
@@ -88,111 +99,162 @@ export default function LessonFormScreen() {
         }
     };
 
+    const remove = () => {
+        if (!id) return;
+        confirmRemove(Number(id), () => router.back());
+    };
+
     return (
         <Screen title={isEdit ? 'Урок' : 'Новый урок'} onBack={() => router.back()}>
             <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps='handled'>
-                <PickerField
-                    label='Дата'
-                    mode='date'
-                    value={parseDate(lessonDate)}
-                    display={formatDateRu(lessonDate)}
-                    onChange={(d) => setLessonDate(toDateString(d))}
-                />
+                <FormCard>
+                    <PickerField
+                        label='Дата'
+                        mode='date'
+                        value={parseDate(lessonDate)}
+                        display={formatDateRu(lessonDate)}
+                        onChange={pickDate}
+                    />
 
-                <View style={styles.row}>
-                    <View style={styles.flex}>
-                        <PickerField
-                            label='Начало'
-                            mode='time'
-                            value={timeToDate(startTime)}
-                            display={startTime}
-                            onChange={(d) => {
-                                const start = dateToTime(d);
-                                setStartTime(start);
-                                setEndTime(addMinutesToTime(start, lessonDuration));
-                            }}
-                        />
-                    </View>
-                    <View style={styles.flex}>
-                        <PickerField
-                            label='Конец'
-                            mode='time'
-                            value={timeToDate(endTime)}
-                            display={endTime}
-                            onChange={(d) => setEndTime(dateToTime(d))}
-                        />
-                    </View>
-                </View>
+                    <FormRow label='Время' onPress={openTime}>
+                        <Text style={styles.value}>
+                            {startTime} – {endTime}
+                        </Text>
+                    </FormRow>
 
-                <View style={styles.row}>
-                    <View style={styles.flex}>
-                        <Text style={styles.label}>Класс</Text>
+                    <FormRow label='Класс'>
                         <TextInput
-                            style={styles.input}
+                            style={styles.valueInput}
                             value={className}
                             onChangeText={setClassName}
                             placeholder='7Б'
+                            placeholderTextColor={colors.placeholder}
+                            accessibilityLabel='Класс'
                         />
-                    </View>
-                    <View style={styles.flex}>
-                        <Text style={styles.label}>Кабинет</Text>
+                    </FormRow>
+
+                    <FormRow label='Кабинет'>
                         <TextInput
-                            style={styles.input}
+                            style={styles.valueInput}
                             value={room}
                             onChangeText={setRoom}
                             placeholder='214'
+                            placeholderTextColor={colors.placeholder}
+                            accessibilityLabel='Кабинет'
+                        />
+                    </FormRow>
+
+                    <FormRow label='Тема' isBlock isLast>
+                        <TextInput
+                            style={styles.topicInput}
+                            value={topic}
+                            onChangeText={setTopic}
+                            placeholder='Квадратные уравнения'
+                            placeholderTextColor={colors.placeholder}
+                            accessibilityLabel='Тема'
+                            multiline
+                        />
+                    </FormRow>
+                </FormCard>
+
+                {isEdit && (
+                    <View style={styles.cancelCard}>
+                        <Text style={styles.cancelLabel}>Урок отменён</Text>
+                        <Switch
+                            value={cancelled}
+                            onValueChange={setCancelled}
+                            trackColor={{ false: colors.barMuted, true: colors.primary }}
+                            thumbColor={colors.card}
                         />
                     </View>
-                </View>
+                )}
 
-                <Text style={styles.label}>Тема</Text>
-                <TextInput
-                    style={[styles.input, styles.multiline]}
-                    value={topic}
-                    onChangeText={setTopic}
-                    placeholder='Квадратные уравнения'
-                    multiline
-                />
-
-                <View style={styles.switchRow}>
-                    <Text style={styles.switchLabel}>Урок отменён</Text>
-                    <Switch value={cancelled} onValueChange={setCancelled} />
-                </View>
-
-                <Pressable style={styles.saveButton} onPress={save} disabled={isSaving}>
+                <Pressable
+                    style={({ pressed }) => [styles.saveButton, pressed && styles.pressed]}
+                    onPress={save}
+                    disabled={isSaving}
+                >
                     <Text style={styles.saveText}>Сохранить</Text>
                 </Pressable>
+
+                {isEdit && (
+                    <Pressable
+                        style={({ pressed }) => [styles.deleteButton, pressed && styles.pressed]}
+                        onPress={remove}
+                        accessibilityRole='button'
+                        accessibilityLabel='Удалить урок'
+                    >
+                        <Feather name='trash-2' size={18} color={colors.danger} />
+                        <Text style={styles.deleteText}>Удалить урок</Text>
+                    </Pressable>
+                )}
             </ScrollView>
+
+            {isTimeOpen && (
+                <TimePickerModal
+                    startTime={startTime}
+                    endTime={endTime}
+                    defaultDuration={lessonDuration}
+                    onApply={applyTime}
+                    onClose={closeTime}
+                />
+            )}
         </Screen>
     );
 }
 
 const styles = StyleSheet.create({
-    content: { paddingBottom: 16 },
-    label: { fontWeight: '600', marginBottom: 4, marginTop: 12, color: colors.text },
-    input: {
-        borderWidth: 1,
-        borderColor: colors.border,
-        borderRadius: 8,
-        padding: 10,
-        fontSize: 16,
+    content: { paddingBottom: 24 },
+    value: { fontSize: 14, fontWeight: '700', color: colors.text },
+    valueInput: {
+        alignSelf: 'stretch',
+        padding: 0,
+        fontSize: 14,
+        fontWeight: '700',
         color: colors.text,
+        textAlign: 'right',
     },
-    multiline: { minHeight: 80, textAlignVertical: 'top' },
-    row: { flexDirection: 'row', gap: 12 },
-    flex: { flex: 1 },
-    switchRow: {
+    topicInput: {
+        padding: 0,
+        paddingTop: 2,
+        minHeight: 44,
+        fontSize: 14,
+        fontWeight: '600',
+        color: colors.text,
+        textAlignVertical: 'top',
+    },
+    cancelCard: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 16,
+        justifyContent: 'space-between',
+        marginTop: 14,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderRadius: 18,
+        backgroundColor: colors.card,
     },
-    switchLabel: { fontSize: 16, color: colors.text },
+    cancelLabel: { fontSize: 14, fontWeight: '600', color: colors.text },
     saveButton: {
+        height: 50,
+        marginTop: 16,
+        borderRadius: 14,
         backgroundColor: colors.primary,
-        padding: 14,
-        borderRadius: 8,
-        marginTop: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    saveText: { color: colors.onPrimary, fontWeight: '600', textAlign: 'center', fontSize: 16 },
+    saveText: { fontSize: 16, fontWeight: '700', color: colors.onPrimary },
+    deleteButton: {
+        height: 50,
+        marginTop: 12,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: colors.dangerBorder,
+        backgroundColor: colors.dangerSurface,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+    },
+    deleteText: { fontSize: 15, fontWeight: '600', color: colors.danger },
+    pressed: { opacity: 0.85 },
 });

@@ -11,7 +11,7 @@
 | `types.ts` | `Lesson`, `CopyLessonsSource`, `CurrentAndNextLessons`, `StatusKind`, `StatusStep`, `AppSettings`, `PermissionStatus` |
 | `constants.ts` | `WEEKDAYS`, `MONTHS`, `SCHEDULER_WINDOW_DAYS = 7`, `DEFAULT_SETTINGS`, `SETTING_OPTIONS`, `SETTING_LIMITS` |
 | `dates.ts` | Арифметика и форматирование дат/времени в локальном времени |
-| `schedule.ts` | `toMinutes`, `getCurrentAndNextLessons`, `getNextLessonOfDay`, `lessonIsPassed`, `formatDuration`, `sortDayLessons`, `dayTimeRange`, `weekLessonDays` |
+| `schedule.ts` | `toMinutes`, `timeDiff`, `getCurrentAndNextLessons`, `getNextLessonOfDay`, `lessonIsPassed`, `formatDuration`, `sortDayLessons`, `dayTimeRange`, `weekLessonDays` |
 | `notificationTexts.ts` | `buildEndingText`, `buildNextLessonText`, `buildCurrentLessonText` |
 | `statusTimeline.ts` | `buildStatusTimeline(lessons, now, settings)` → `StatusStep[]` |
 | `textFormaters.ts` | `pluralLessons(n)` — «1 урок / 2 урока / 5 уроков» |
@@ -77,6 +77,8 @@ interface AppSettings {
 ## Логика расписания (`schedule.ts`)
 
 - `toMinutes('08:30')` → `510`.
+- `timeDiff('08:30', '09:15')` → `45` — длительность между временами; отрицательная, если
+  конец раньше начала. Нужна нижнему листу выбора времени.
 - `getCurrentAndNextLessons(lessons, now)` → `{ current, next, minutesLeft, minutesToNext }`.
   Отменённые игнорируются; `current`: `start <= now < end`; `next`: первый неотменённый с
   `start > now`. `lessons` должны быть уроками **одного дня** с `now`. Входной массив не
@@ -170,6 +172,7 @@ export const colors = {
     card: '#ffffff',         // карточки, tab bar, поля ввода
     text: '#1a1a2e',         // заголовки и основной текст
     muted: '#6b7088',        // вторичный текст, подписи
+    placeholder: '#a9adc1',  // подсказки пустых полей формы урока
     primary: '#4f46e5',      // акцент, активная вкладка, полоса урока
     onPrimary: '#ffffff',    // текст/иконка на акцентном фоне
     primaryTint: '#eef0ff',  // фон «сегодня» в DayStrip
@@ -178,6 +181,8 @@ export const colors = {
     border: '#d8d8e2',       // рамки полей ввода
     danger: '#dc2626',       // удаление, «Не выдано»
     dangerBg: '#fdeeee',
+    dangerBorder: '#f4a5a5', // рамка кнопки «Удалить урок»
+    dangerSurface: '#fff5f5', // фон кнопки «Удалить урок»
     dangerMuted: '#a03535',  // красная подсказка (NowCard accent)
     warnBg: '#fdf0c4',       // бейдж «Отменён», BatteryHint
     warnText: '#92400e',

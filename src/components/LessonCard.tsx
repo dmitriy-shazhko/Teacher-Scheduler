@@ -83,11 +83,11 @@ const styles = StyleSheet.create({
     topic: { fontSize: 13, color: colors.muted, marginTop: 2 },
     badge: {
         alignSelf: 'flex-start',
-        backgroundColor: colors.warnBg,
+        backgroundColor: colors.cancelledBg,
         borderRadius: 8,
         paddingHorizontal: 8,
         paddingVertical: 2,
         marginTop: 4,
     },
-    badgeText: { fontSize: 11, fontWeight: '700', color: colors.warnText },
+    badgeText: { fontSize: 11, fontWeight: '700', color: colors.cancelled },
 });

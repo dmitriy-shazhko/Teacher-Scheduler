@@ -194,8 +194,10 @@ export const colors = {
     dangerBg: '#fdeeee',
     dangerBorder: '#f4a5a5', // рамка кнопки «Удалить урок»
     dangerSurface: '#fff5f5', // фон кнопки «Удалить урок»
-    warnBg: '#fdf0c4',       // бейдж «Отменён», BatteryHint
-    warnText: '#92400e',
+    warnBg: '#fdf0c4',       // BatteryHint, фон
+    warnText: '#92400e',     // BatteryHint, текст
+    cancelled: '#b91c1c',    // бейдж «Отменён», заголовок секции «Отменённые уроки»
+    cancelledBg: '#fee2e2',  // фон бейджа «Отменён» и счётчика отменённых
     currentBg: '#dcfce7',    // бейдж «Идёт сейчас», фон
     currentText: '#166534',  // бейдж «Идёт сейчас», текст
     currentDot: '#16a34a',   // точка бейджа и полоса прогресса

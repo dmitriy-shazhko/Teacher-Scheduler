@@ -1,7 +1,7 @@
 import { colors } from '@/domain/theme';
 import { StyleSheet, Text, View } from 'react-native';
 
-export type LessonSectionTone = 'accent' | 'muted' | 'warn';
+export type LessonSectionTone = 'accent' | 'muted' | 'cancelled';
 
 interface Props {
     title: string;
@@ -11,11 +11,11 @@ interface Props {
 }
 
 // цвета заголовка и счётчика по смыслу секции: активные — акцент,
-// прошедшие — приглушённые, отменённые — предупреждение
+// прошедшие — приглушённые, отменённые — красные (как в макете week)
 const TONES: Record<LessonSectionTone, { text: string; badge: string }> = {
     accent: { text: colors.primary, badge: colors.primaryTint },
     muted: { text: colors.mutedStrong, badge: colors.mutedTint },
-    warn: { text: colors.warnText, badge: colors.warnBg },
+    cancelled: { text: colors.cancelled, badge: colors.cancelledBg },
 };
 
 export function LessonSectionHeader({ title, count, note, tone = 'accent' }: Props) {

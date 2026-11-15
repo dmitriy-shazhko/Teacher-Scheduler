@@ -18,6 +18,8 @@ export const colors = {
     dangerSurface: '#fff5f5',
     warnBg: '#fdf0c4',
     warnText: '#92400e',
+    cancelled: '#b91c1c',
+    cancelledBg: '#fee2e2',
     currentBg: '#dcfce7',
     currentText: '#166534',
     currentDot: '#16a34a',

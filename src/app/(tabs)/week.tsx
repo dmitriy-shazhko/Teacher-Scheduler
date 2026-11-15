@@ -63,7 +63,7 @@ export default function WeekScreen() {
     const allSections: DaySection[] = [
         { key: 'active', title: 'Активные уроки', tone: 'accent', data: active },
         { key: 'passed', title: 'Прошедшие уроки', tone: 'muted', data: passed },
-        { key: 'cancelled', title: 'Отменённые уроки', tone: 'warn', data: cancelled },
+        { key: 'cancelled', title: 'Отменённые уроки', tone: 'cancelled', data: cancelled },
     ];
     const sections = allSections.filter((s) => s.data.length > 0);
 

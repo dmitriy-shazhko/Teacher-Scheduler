@@ -68,7 +68,7 @@ module.exports = {
   `SQLiteDatabase` (`runAsync`, `getAllAsync`, `getFirstAsync`, `execAsync`,
   `withTransactionAsync`) в `test/helpers/`. Запасные варианты: `sql.js`, `node:sqlite`.
   Проверять миграции (пустая база + повторный запуск), CRUD, границы диапазона, `copyWeek`
-  (сдвиг, пропуск отменённых, темы, откат транзакции), `deleteLesson`.
+  (сдвиг, перенос отменённых с флагом, темы, откат транзакции), `deleteLesson`.
 - T5 (план): тесты планировщика и стора с моками; сценарий бага №4 (падение
   `createTriggerNotification` после отмены старых триггеров), очередь синхронизаций,
   `timeoutAfter`, уникальные `id`.

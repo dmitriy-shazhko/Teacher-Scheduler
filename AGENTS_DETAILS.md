@@ -202,8 +202,8 @@ export type PermissionStatus = 'granted' | 'canAsk' | 'blocked';
   `test/helpers/` под `runAsync`, `getAllAsync`, `getFirstAsync`, `execAsync`,
   `withTransactionAsync`. Проверить миграцию на пустой базе и повторный запуск,
   `addLesson` → `getLessonById` (cancelled 0/1), `getLessonsForRange` (границы,
-  сортировка), `getLessonsForWeek` (пн–вс), `copyWeek` (сдвиг, пропуск отменённых, темы,
-  откат транзакции), `deleteLesson`. Если `better-sqlite3` не ставится на Windows —
+  сортировка), `getLessonsForWeek` (пн–вс), `copyWeek` (сдвиг, перенос отменённых с флагом,
+  темы, откат транзакции), `deleteLesson`. Если `better-sqlite3` не ставится на Windows —
   `sql.js` (WASM) или `node:sqlite`.
 - **T5.** Тесты планировщика и стора: БД в памяти, моки `react-native-notify-kit` и
   `expo-sqlite/kv-store`. Проверить отмену старых триггеров, уникальные `id`, верный

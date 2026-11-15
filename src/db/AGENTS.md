@@ -62,8 +62,9 @@ CREATE INDEX idx_lessons_date ON lessons(date);
   `buildStatusTimeline`. `countLessonsForWeek` тоже считает все уроки, включая отменённые.
 - Для планировщика нужен `getLessonsForRange` (окно 8 календарных дат), а не
   `getLessonsForWeek`: неделя может кончиться в середине окна.
-- `copyWeek` копирует со сдвигом по дню недели (`daysBetween`), **пропускает отменённые**,
-  темы сохраняет, выполняет всё в `withTransactionAsync`, возвращает даты
+- `copyWeek` копирует со сдвигом по дню недели (`daysBetween`), **переносит и отменённые**
+  (флаг `cancelled` сохраняется), темы сохраняет, выполняет всё в `withTransactionAsync`,
+  возвращает даты
   (`ГГГГ-ММ-ДД`) добавленных уроков — по ним экран «Неделя» выбирает день после копирования.
 - `deleteLesson` удаляет физически; «отменённый» урок остаётся в БД с `cancelled = 1`.
 - При добавлении поля: обновить `LessonRow`, `rowToLesson`, SQL в `addLesson`/
@@ -91,8 +92,8 @@ CREATE INDEX idx_lessons_date ON lessons(date);
   встроенный `node:sqlite`.
 - Проверять: миграцию на пустой базе и повторный запуск; `addLesson` → `getLessonById`
   (включая `cancelled` 0/1); границы и сортировку `getLessonsForRange`; пн–вс
-  `getLessonsForWeek`; `copyWeek` (сдвиг, пропуск отменённых, сохранение тем, откат
-  транзакции при ошибке); `deleteLesson`.
+  `getLessonsForWeek`; `copyWeek` (сдвиг, перенос отменённых с сохранением флага, сохранение
+  тем, откат транзакции при ошибке); `deleteLesson`.
 - Тесты — `src/db/*.test.ts`; в `src/app/` тестов быть не должно.
 
 ## Грабли

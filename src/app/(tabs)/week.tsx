@@ -102,9 +102,11 @@ export default function WeekScreen() {
         }
     };
 
-    const pickSource = (source: Date) => {
+    const pickSource = async (source: Date) => {
         if (isCopying) return;
-        if (lessons.length === 0) {
+        // спрашиваем БД, а не стор: в lessons могут быть данные другой недели
+        const targetCount = await countLessonsForWeek(db, weekStart);
+        if (targetCount === 0) {
             doCopy(source);
             return;
         }

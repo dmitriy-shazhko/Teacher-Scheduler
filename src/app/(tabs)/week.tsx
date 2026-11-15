@@ -19,6 +19,7 @@ import { pluralLessons } from '@/domain/textFormaters';
 import { colors } from '@/domain/theme';
 import { CopyLessonsSource, Lesson } from '@/domain/types';
 import { useLessonActions } from '@/hooks/useLessonActions';
+import { useNow } from '@/hooks/useNow';
 import { useLessonStore } from '@/store/lessonsStore';
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -43,7 +44,7 @@ export default function WeekScreen() {
     const [copyOpen, setCopyOpen] = useState(false);
     const [sources, setSources] = useState<CopyLessonsSource[]>([]);
     const [isCopying, setIsCopying] = useState(false);
-    const [now, setNow] = useState(() => new Date());
+    const now = useNow();
     const [selected, setSelected] = useState(() =>
         Math.min((new Date().getDay() + 6) % 7, WEEKDAYS.length - 1),
     );
@@ -123,20 +124,6 @@ export default function WeekScreen() {
     useFocusEffect(
         useCallback(() => {
             load();
-
-            // минута сменилась — пересчитываем «прошедшие/активные»;
-            // смена суток тоже приходит этим обновлением
-            const clock = setInterval(() => {
-                const current = new Date();
-
-                setNow((prev) =>
-                    Math.floor(current.getTime() / 60_000) === Math.floor(prev.getTime() / 60_000)
-                        ? prev
-                        : current,
-                );
-            }, 1000);
-
-            return () => clearInterval(clock);
         }, [load]),
     );
 

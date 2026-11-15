@@ -12,10 +12,11 @@ import {
 } from '@/domain/schedule';
 import { colors } from '@/domain/theme';
 import { Lesson } from '@/domain/types';
+import { useNow } from '@/hooks/useNow';
 import { useLessonStore } from '@/store/lessonsStore';
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { SectionList, StyleSheet, Text } from 'react-native';
 
 interface DaySection {
@@ -30,7 +31,7 @@ export default function TodayScreen() {
     const db = useSQLiteContext();
     const lessons = useLessonStore((s) => s.todayLessons);
     const loadToday = useLessonStore((s) => s.loadToday);
-    const [now, setNow] = useState(() => new Date());
+    const now = useNow();
 
     const { current, next, minutesLeft, minutesToNext } = useMemo(
         () => getCurrentAndNextLessons(lessons, now),
@@ -61,32 +62,21 @@ export default function TodayScreen() {
         { key: 'later', title: 'Позже', tone: 'muted', data: upcoming.slice(1) },
     ];
     const sections = allSections.filter((s) => s.data.length > 0);
+    const today = toDateString(now);
+    const loadedDay = useRef(today);
 
     useFocusEffect(
         useCallback(() => {
             loadToday(db);
-
-            let day = toDateString(new Date());
-
-            const clock = setInterval(() => {
-                const current = new Date();
-
-                setNow((prev) =>
-                    Math.floor(current.getTime() / 60_000) === Math.floor(prev.getTime() / 60_000)
-                        ? prev
-                        : current,
-                );
-
-                const today = toDateString(current);
-                if (today !== day) {
-                    day = today;
-                    loadToday(db);
-                }
-            }, 1000);
-
-            return () => clearInterval(clock);
         }, [db, loadToday]),
     );
+
+    useEffect(() => {
+        if (loadedDay.current === today) return;
+
+        loadedDay.current = today;
+        loadToday(db);
+    }, [db, loadToday, today]);
 
     return (
         <Screen title='Сегодня'>

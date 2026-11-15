@@ -19,6 +19,18 @@ export function lessonIsPassed(lesson: Lesson, now: Date): boolean {
     return toMinutes(lesson.endTime) <= nowMin;
 }
 
+// сколько процентов урока прошло (0–100); вне урока — 0 или 100
+export function lessonProgress(lesson: Lesson, now: Date): number {
+    const start = toMinutes(lesson.startTime);
+    const end = toMinutes(lesson.endTime);
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+
+    if (end <= start || nowMin <= start) return 0;
+    if (nowMin >= end) return 100;
+
+    return Math.round(((nowMin - start) / (end - start)) * 100);
+}
+
 export function getCurrentAndNextLessons(lessons: Lesson[], now: Date): CurrentAndNextLessons {
     const nowMin = now.getHours() * 60 + now.getMinutes();
 

@@ -8,9 +8,10 @@ import { IconButton } from './IconButton';
 interface Props {
     lesson: Lesson;
     passed?: boolean;
+    highlighted?: boolean;
 }
 
-export function LessonCard({ lesson, passed = false }: Props) {
+export function LessonCard({ lesson, passed = false, highlighted = false }: Props) {
     const { openLesson, confirmRemove } = useLessonActions();
     const dimmed = passed || lesson.cancelled;
     const onDelete = () => {
@@ -20,7 +21,11 @@ export function LessonCard({ lesson, passed = false }: Props) {
     return (
         <Pressable
             onPress={() => openLesson(lesson.id)}
-            style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }]}
+            style={({ pressed }) => [
+                styles.card,
+                highlighted && styles.highlighted,
+                pressed && { opacity: 0.85 },
+            ]}
         >
             <View style={styles.times}>
                 <Text
@@ -64,6 +69,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.card,
         borderRadius: 18,
     },
+    highlighted: { borderWidth: 1, borderColor: colors.primaryBorder },
     times: { width: 54, alignItems: 'center' },
     start: { fontSize: 16, fontWeight: '800', color: colors.text },
     startDimmed: { color: colors.muted },

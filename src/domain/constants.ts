@@ -25,6 +25,21 @@ export const MONTHS = [
     'дек',
 ];
 
+export const MONTHS_FULL = [
+    'января',
+    'февраля',
+    'марта',
+    'апреля',
+    'мая',
+    'июня',
+    'июля',
+    'августа',
+    'сентября',
+    'октября',
+    'ноября',
+    'декабря',
+];
+
 export const WEEKDAYS_SHORT = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
 export const SCHEDULER_WINDOW_DAYS = 7;

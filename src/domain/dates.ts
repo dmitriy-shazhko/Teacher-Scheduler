@@ -1,4 +1,4 @@
-import { MONTHS } from './constants';
+import { MONTHS, MONTHS_FULL, WEEKDAYS } from './constants';
 
 export function toDateString(d: Date): string {
     const y = d.getFullYear();
@@ -70,6 +70,13 @@ export function dateToTime(d: Date): string {
     const h = String(d.getHours()).padStart(2, '0');
     const m = String(d.getMinutes()).padStart(2, '0');
     return `${h}:${m}`;
+}
+
+// "воскресенье, 15 ноября"
+export function formatDateFull(d: Date): string {
+    const weekday = WEEKDAYS[(d.getDay() + 6) % 7].toLowerCase();
+
+    return `${weekday}, ${d.getDate()} ${MONTHS_FULL[d.getMonth()]}`;
 }
 
 export function formatDateRu(s: string): string {

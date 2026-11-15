@@ -1,14 +1,30 @@
 import { LessonCard } from '@/components/LessonCard';
+import { LessonSectionHeader, LessonSectionTone } from '@/components/LessonSectionHeader';
 import { NowCard } from '@/components/NowCard';
 import { Screen } from '@/components/Screen';
-import { formatDateRu, toDateString } from '@/domain/dates';
-import { formatDuration, getCurrentAndNextLessons, lessonIsPassed } from '@/domain/schedule';
+import { formatDateFull, toDateString } from '@/domain/dates';
+import {
+    formatDuration,
+    getCurrentAndNextLessons,
+    lessonIsPassed,
+    lessonProgress,
+    sortDayLessons,
+} from '@/domain/schedule';
 import { colors } from '@/domain/theme';
+import { Lesson } from '@/domain/types';
 import { useLessonStore } from '@/store/lessonsStore';
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useMemo, useState } from 'react';
-import { SectionList, StyleSheet, Text, View } from 'react-native';
+import { SectionList, StyleSheet, Text } from 'react-native';
+
+interface DaySection {
+    key: 'next' | 'later';
+    title: string;
+    tone: LessonSectionTone;
+    note?: string;
+    data: Lesson[];
+}
 
 export default function TodayScreen() {
     const db = useSQLiteContext();
@@ -21,40 +37,31 @@ export default function TodayScreen() {
         [lessons, now],
     );
 
-    const others = lessons.filter(
-        (l) => l.id !== current?.id && l.id !== next?.id && !l.cancelled && !lessonIsPassed(l, now),
-    );
-    const cancelledLessons = lessons.filter((l) => l.cancelled);
-    const passedLessons = lessons.filter((l) => !l.cancelled && lessonIsPassed(l, now));
+    const main = current ?? next;
+    const mainMinutes = current ? minutesLeft : minutesToNext;
+    const mainProgress = current ? lessonProgress(current, now) : 0;
 
-    const sections = [
-        { title: 'Остальные уроки', data: others },
-        { title: 'Прошедшие уроки', data: passedLessons },
-        { title: 'Отмененные уроки', data: cancelledLessons },
-    ].filter((s) => s.data.length > 0);
-
-    const header = (
-        <View>
-            {current && minutesLeft !== null && (
-                <NowCard
-                    accent
-                    label='Текущий урок'
-                    hint={`осталось ${formatDuration(minutesLeft)} до конца урока`}
-                    lesson={current}
-                />
-            )}
-            {next && minutesToNext !== null && (
-                <NowCard
-                    label='Следующий урок'
-                    hint={`осталось ${formatDuration(minutesToNext)} до начала урока`}
-                    lesson={next}
-                />
-            )}
-            {!current && !next && lessons.length > 0 && (
-                <Text style={styles.empty}>Уроков сегодня больше нет</Text>
-            )}
-        </View>
+    // будущие уроки после карточки: первый — «Следующий», остальные — «Позже»
+    const upcoming = sortDayLessons(
+        lessons.filter((l) => !l.cancelled && !lessonIsPassed(l, now) && l.id !== main?.id),
     );
+    const nextLesson = upcoming[0] ?? null;
+    const afterMain = getCurrentAndNextLessons(upcoming, now);
+
+    const allSections: DaySection[] = [
+        {
+            key: 'next',
+            title: 'Следующий',
+            tone: 'accent',
+            note:
+                afterMain.minutesToNext !== null
+                    ? `через ${formatDuration(afterMain.minutesToNext)}`
+                    : undefined,
+            data: nextLesson ? [nextLesson] : [],
+        },
+        { key: 'later', title: 'Позже', tone: 'muted', data: upcoming.slice(1) },
+    ];
+    const sections = allSections.filter((s) => s.data.length > 0);
 
     useFocusEffect(
         useCallback(() => {
@@ -84,7 +91,7 @@ export default function TodayScreen() {
 
     return (
         <Screen title='Сегодня'>
-            <Text style={styles.date}>{formatDateRu(toDateString(now))}</Text>
+            <Text style={styles.date}>{formatDateFull(now)}</Text>
 
             {lessons.length === 0 ? (
                 <Text style={styles.empty}>Сегодня уроков нет</Text>
@@ -92,11 +99,31 @@ export default function TodayScreen() {
                 <SectionList
                     sections={sections}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <LessonCard lesson={item} />}
-                    renderSectionHeader={({ section }) => (
-                        <Text style={styles.sectionTitle}>{section.title}</Text>
+                    renderItem={({ item, section }) => (
+                        <LessonCard lesson={item} highlighted={section.key === 'next'} />
                     )}
-                    ListHeaderComponent={header}
+                    renderSectionHeader={({ section }) => (
+                        <LessonSectionHeader
+                            title={section.title}
+                            count={section.data.length}
+                            note={section.note}
+                            tone={section.tone}
+                        />
+                    )}
+                    ListHeaderComponent={
+                        main && mainMinutes !== null ? (
+                            <NowCard
+                                lesson={main}
+                                state={current ? 'active' : 'soon'}
+                                minutes={mainMinutes}
+                                progress={mainProgress}
+                            />
+                        ) : (
+                            <Text style={styles.empty}>Уроков сегодня больше нет</Text>
+                        )
+                    }
+                    stickySectionHeadersEnabled={false}
+                    contentContainerStyle={styles.list}
                 />
             )}
         </Screen>
@@ -106,7 +133,8 @@ export default function TodayScreen() {
 const styles = StyleSheet.create({
     date: {
         color: colors.muted,
-        marginBottom: 16,
+        fontSize: 14,
+        marginBottom: 14,
     },
     empty: {
         color: colors.muted,
@@ -115,10 +143,7 @@ const styles = StyleSheet.create({
         marginTop: 12,
         marginBottom: 18,
     },
-    sectionTitle: {
-        fontSize: 16,
-        fontWeight: '700',
-        marginBottom: 8,
-        color: colors.text,
+    list: {
+        paddingBottom: 16,
     },
 });

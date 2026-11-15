@@ -4,6 +4,7 @@ import {
     getCurrentAndNextLessons,
     getNextLessonOfDay,
     lessonIsPassed,
+    lessonProgress,
     sortDayLessons,
     splitDayLessons,
     timeDiff,
@@ -49,6 +50,27 @@ describe('lessonIsPassed', () => {
         ['намного позже', at(15, 0), true],
     ])('%s', (_title, now, expected) => {
         expect(lessonIsPassed(lesson, now)).toBe(expected);
+    });
+});
+
+describe('lessonProgress', () => {
+    const lesson = makeLesson({ startTime: '08:30', endTime: '09:15' }); // 45 минут
+
+    it.each([
+        ['до начала', at(8, 0), 0],
+        ['ровно в начало', at(8, 30), 0],
+        ['через 15 минут', at(8, 45), 33],
+        ['за минуту до конца', at(9, 14), 98],
+        ['ровно в конец', at(9, 15), 100],
+        ['после урока', at(10, 0), 100],
+    ])('%s', (_title, now, expected) => {
+        expect(lessonProgress(lesson, now)).toBe(expected);
+    });
+
+    it('нулевая длительность — 0, без деления на ноль', () => {
+        const broken = makeLesson({ startTime: '08:30', endTime: '08:30' });
+
+        expect(lessonProgress(broken, at(8, 30))).toBe(0);
     });
 });
 

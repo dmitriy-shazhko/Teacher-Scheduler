@@ -5,7 +5,8 @@ export type LessonSectionTone = 'accent' | 'muted' | 'warn';
 
 interface Props {
     title: string;
-    count: number;
+    count?: number;
+    note?: string;
     tone?: LessonSectionTone;
 }
 
@@ -17,15 +18,18 @@ const TONES: Record<LessonSectionTone, { text: string; badge: string }> = {
     warn: { text: colors.warnText, badge: colors.warnBg },
 };
 
-export function LessonSectionHeader({ title, count, tone = 'accent' }: Props) {
+export function LessonSectionHeader({ title, count, note, tone = 'accent' }: Props) {
     const t = TONES[tone];
+    const badge = note ?? count;
 
     return (
         <View style={styles.row}>
             <Text style={[styles.title, { color: t.text }]}>{title}</Text>
-            <View style={[styles.badge, { backgroundColor: t.badge }]}>
-                <Text style={[styles.count, { color: t.text }]}>{count}</Text>
-            </View>
+            {badge !== undefined && (
+                <View style={[styles.badge, { backgroundColor: t.badge }]}>
+                    <Text style={[styles.count, { color: t.text }]}>{badge}</Text>
+                </View>
+            )}
         </View>
     );
 }

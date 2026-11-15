@@ -9,9 +9,9 @@
 | Файл | Содержимое |
 | --- | --- |
 | `types.ts` | `Lesson`, `CopyLessonsSource`, `CurrentAndNextLessons`, `DayLessonGroups`, `StatusKind`, `StatusStep`, `AppSettings`, `PermissionStatus` |
-| `constants.ts` | `WEEKDAYS`, `MONTHS`, `SCHEDULER_WINDOW_DAYS = 7`, `DEFAULT_SETTINGS`, `SETTING_OPTIONS`, `SETTING_LIMITS` |
+| `constants.ts` | `WEEKDAYS`, `MONTHS`, `MONTHS_FULL`, `WEEKDAYS_SHORT`, `SCHEDULER_WINDOW_DAYS = 7`, `DEFAULT_SETTINGS`, `SETTING_OPTIONS`, `SETTING_LIMITS` |
 | `dates.ts` | Арифметика и форматирование дат/времени в локальном времени |
-| `schedule.ts` | `toMinutes`, `timeDiff`, `getCurrentAndNextLessons`, `getNextLessonOfDay`, `lessonIsPassed`, `formatDuration`, `sortDayLessons`, `splitDayLessons`, `dayTimeRange`, `weekLessonDays` |
+| `schedule.ts` | `toMinutes`, `timeDiff`, `getCurrentAndNextLessons`, `getNextLessonOfDay`, `lessonIsPassed`, `lessonProgress`, `formatDuration`, `sortDayLessons`, `splitDayLessons`, `dayTimeRange`, `weekLessonDays` |
 | `notificationTexts.ts` | `buildEndingText`, `buildNextLessonText`, `buildCurrentLessonText` |
 | `statusTimeline.ts` | `buildStatusTimeline(lessons, now, settings)` → `StatusStep[]` |
 | `textFormaters.ts` | `pluralLessons(n)` — «1 урок / 2 урока / 5 уроков» |
@@ -65,6 +65,7 @@ interface AppSettings {
 | `formatShort(Date)` | `'5 окт'` |
 | `formatWeek(monday)` | `'5 окт – 11 окт'` |
 | `formatDateRu('2026-12-25')` | `'25.12.2026'` |
+| `formatDateFull(new Date(2026, 10, 15))` | `'воскресенье, 15 ноября'` — дата на экране «Сегодня» |
 | `timeToDate('08:30')` | сегодняшняя дата с этим временем (единственное место с `new Date()` без параметра; используется только в UI) |
 | `dateToTime(Date)` | `'08:30'` |
 | `toDate(date, time)` | локальный `Date` из даты и времени; нужен планировщику |
@@ -100,6 +101,9 @@ interface AppSettings {
   дня для сводки, порядок массива не важен; отменённые уроки учитываются. `null` для
   пустого списка.
 - `lessonIsPassed(lesson, now)` — `end <= now`.
+- `lessonProgress(lesson, now)` — сколько процентов урока прошло (0–100, округление):
+  до начала — `0`, ровно в конец и позже — `100`, нулевая длительность — `0`. Полоса
+  прогресса на «Сегодня».
 - `formatDuration(minutes)` → `'35 мин'`, `'1 ч 15 мин'`, `'2 ч'`.
 
 ## Тексты уведомлений (`notificationTexts.ts`)
@@ -178,7 +182,7 @@ export const colors = {
     text: '#1a1a2e',         // заголовки и основной текст
     muted: '#6b7088',        // вторичный текст, подписи
     mutedStrong: '#5b607a',  // заголовок секции «Прошедшие уроки»
-    mutedTint: '#e4e6f5',    // бейдж-счётчик «Прошедшие уроки»
+    mutedTint: '#e4e6f5',    // бейдж-счётчик «Прошедшие уроки», фон прогресса
     placeholder: '#a9adc1',  // подсказки пустых полей формы урока
     primary: '#4f46e5',      // акцент, активная вкладка, полоса урока
     onPrimary: '#ffffff',    // текст/иконка на акцентном фоне
@@ -190,12 +194,14 @@ export const colors = {
     dangerBg: '#fdeeee',
     dangerBorder: '#f4a5a5', // рамка кнопки «Удалить урок»
     dangerSurface: '#fff5f5', // фон кнопки «Удалить урок»
-    dangerMuted: '#a03535',  // красная подсказка (NowCard accent)
     warnBg: '#fdf0c4',       // бейдж «Отменён», BatteryHint
     warnText: '#92400e',
-    success: '#498d1c',      // зелёный акцент текущего урока (NowCard)
-    warning: '#cf9801',      // подпись NowCard
-    info: '#056ccc',         // класс/кабинет в NowCard
+    currentBg: '#dcfce7',    // бейдж «Идёт сейчас», фон
+    currentText: '#166534',  // бейдж «Идёт сейчас», текст
+    currentDot: '#16a34a',   // точка бейджа и полоса прогресса
+    soonBg: '#fde68a',       // бейдж «Скоро начнётся», фон
+    soonText: '#713f12',     // бейдж «Скоро начнётся», текст
+    soonDot: '#a16207',      // точка бейджа «Скоро начнётся»
     barMuted: '#cfd2e0',     // полоса отменённого урока
     transparent: 'transparent', // прозрачный фон (IconButton variant='ghost')
     overlay: 'rgba(0, 0, 0, 0.4)', // подложка Modal

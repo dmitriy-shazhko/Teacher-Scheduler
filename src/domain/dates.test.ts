@@ -3,6 +3,7 @@ import {
     addMinutesToTime,
     dateToTime,
     daysBetween,
+    formatDateFull,
     formatDateRu,
     formatShort,
     formatWeek,
@@ -178,6 +179,17 @@ describe('formatWeek', () => {
         ['2026-12-28', '28 дек – 3 янв'],
     ])('понедельник %s → %s', (monday, expected) => {
         expect(formatWeek(parseDate(monday))).toBe(expected);
+    });
+});
+
+describe('formatDateFull', () => {
+    it.each([
+        [new Date(2026, 9, 23), 'пятница, 23 октября'],
+        [new Date(2026, 10, 15), 'воскресенье, 15 ноября'],
+        [new Date(2026, 11, 31), 'четверг, 31 декабря'],
+        [new Date(2027, 0, 4), 'понедельник, 4 января'],
+    ])('%s → %s', (date, expected) => {
+        expect(formatDateFull(date)).toBe(expected);
     });
 });
 

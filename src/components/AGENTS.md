@@ -11,9 +11,9 @@
 | Компонент | Пропсы | Поведение |
 | --- | --- | --- |
 | `Screen.tsx` | `title`, `children`, `rightBlock?`, `onBack?` | Каркас экрана: фон `colors.bg`, поля 16, `paddingTop = insets.top + TOP_GAP` (28), заголовок 28 px bold. `rightBlock` — элемент справа от заголовка (обычно `IconButton`); `onBack` рисует над заголовком «‹ Назад» |
-| `LessonCard.tsx` | `lesson: Lesson`, `passed?` | Карточка урока строкой: колонка времени (начало 16 px bold, конец 12 px), цветная полоса слева, класс + `каб. N` (или «кабинет не указан»), тема, если есть. Нажатие — `openLesson(id)`, корзина `IconButton variant='danger'` — `confirmRemove(id)`. Приглушение (`dimmed = passed` или `lesson.cancelled`): время `colors.muted`, класс `mutedStrong`, полоса `barMuted`. Отменённый вдобавок: начало зачёркнуто, бейдж «Отменён». `passed` ставит «Неделя» для секции «Прошедшие уроки». `key` задаёт родитель |
-| `LessonSectionHeader.tsx` | `title`, `count`, `tone?: 'accent' \| 'muted' \| 'warn'` | Заголовок секции списка уроков (13 px bold) с бейджем-счётчиком справа. `accent` — `colors.primary`/`primaryTint`, `muted` — `mutedStrong`/`mutedTint`, `warn` — `warnText`/`warnBg`. Используется на «Неделе» («Активные / Прошедшие / Отменённые уроки») |
-| `NowCard.tsx` | `label`, `hint`, `lesson`, `accent?` | Крупная карточка текущего/следующего урока, нажатие — `openLesson`. `accent` — зелёная рамка/подпись `colors.success` |
+| `LessonCard.tsx` | `lesson: Lesson`, `passed?`, `highlighted?` | Карточка урока строкой: колонка времени (начало 16 px bold, конец 12 px), цветная полоса слева, класс + `каб. N` (или «кабинет не указан»), тема, если есть. Нажатие — `openLesson(id)`, корзина `IconButton variant='danger'` — `confirmRemove(id)`. Приглушение (`dimmed = passed` или `lesson.cancelled`): время `colors.muted`, класс `mutedStrong`, полоса `barMuted`. Отменённый вдобавок: начало зачёркнуто, бейдж «Отменён». `passed` ставит «Неделя» для секции «Прошедшие уроки», `highlighted` — рамка `primaryBorder` для «Следующего» на «Сегодня». `key` задаёт родитель |
+| `LessonSectionHeader.tsx` | `title`, `count?`, `note?`, `tone?: 'accent' \| 'muted' \| 'warn'` | Заголовок секции списка уроков (13 px bold) с бейджем справа: `count` — число уроков, `note` — свой текст (например, «через 28 мин», он важнее счётчика). `accent` — `colors.primary`/`primaryTint`, `muted` — `mutedStrong`/`mutedTint`, `warn` — `warnText`/`warnBg`. Используется на «Неделе» и «Сегодня» |
+| `NowCard.tsx` | `lesson`, `state: 'active' \| 'soon'`, `minutes`, `progress?` | Крупная карточка идущего/ближайшего урока (макеты `today-active`/`today-soon`): бейдж состояния, время 36 px, строка «класс · каб. N» с иконкой `map-pin` (как в `LessonCard`), тема, подпись «Осталось N мин» / «Начнётся через N мин». Для `active` дополнительно полоса прогресса `progress` (0–100, цвет `currentDot`). Нажатие — `openLesson` |
 | `DayCard.tsx` | `name`, `day: Date`, `lessons: Lesson[]` | Легаси: заголовок «Понедельник, 5 окт», «＋» и список `LessonCard`. Экран «Неделя» им больше не пользуется (`DayStrip` + список выбранного дня); удалить, когда пропадёт последний потребитель |
 | `IconButton.tsx` | `icon`, `label`, `onPress`, `variant?: 'light' \| 'danger' \| 'primary' \| 'ghost'`, `size?: number` | Кнопка-иконка (Feather); `label` уходит в `accessibilityLabel`. `size` — сторона квадрата, по умолчанию 44; иконка = `round(size * 0.45)` (20 при 44), радиус масштабируется от 12/22. `light` — карточка + акцент, `danger` — красная на `dangerBg`, `primary` — белая на акценте, `ghost` — прозрачный фон (тот же квадрат, для иконок внутри карточек, `WeekSwitcher`). Использовать вместо самодельных `Pressable` с иконкой |
 | `DayStrip.tsx` | `weekStart: Date`, `selected: number`, `todayIndex: number`, `hasLessons: boolean[]`, `onSelect(i)` | Ряд из 7 пилюль «Пн / 5» с точкой под числом: точка `primary` — в этот день есть уроки, прозрачная — уроков нет (текст дня тогда `muted`). Сегодня — `primaryTint` + рамка, выбранный день — `primary` с белым текстом и белой точкой; `todayIndex = -1`, если сегодня не на этой неделе |
@@ -39,20 +39,18 @@
 | `card` | `#ffffff` | карточки, tab bar, окна `Modal` |
 | `text` | `#1a1a2e` | заголовки и основной текст |
 | `muted` | `#6b7088` | вторичный текст, подписи, пустые состояния |
-| `mutedStrong` / `mutedTint` | `#5b607a` / `#e4e6f5` | заголовок и бейдж секции «Прошедшие уроки» (`LessonSectionHeader`) |
+| `mutedStrong` / `mutedTint` | `#5b607a` / `#e4e6f5` | заголовок и бейдж секции «Прошедшие уроки», фон полосы прогресса `NowCard` |
 | `placeholder` | `#a9adc1` | подсказки незаполненных полей (`TextInput` на форме урока) — светлее `muted` |
 | `primary` | `#4f46e5` | акцент: кнопки, активная вкладка, полоса урока, ссылки |
 | `onPrimary` | `#ffffff` | текст/иконка на акцентном фоне |
-| `primaryTint` / `primaryBorder` | `#eef0ff` / `#c7c9f5` | «сегодня» в `DayStrip`, фон строк в `CopyLessonsModal` |
+| `primaryTint` / `primaryBorder` | `#eef0ff` / `#c7c9f5` | «сегодня» в `DayStrip`, фон строк в `CopyLessonsModal`, рамка «Следующего» |
 | `divider` | `#eceef6` | разделители, border tab bar, вторичная кнопка |
 | `border` | `#d8d8e2` | рамки полей ввода (`PickerField`, `TextInput`) |
 | `danger` / `dangerBg` | `#dc2626` / `#fdeeee` | удаление (корзина), «Не выдано», ошибка ввода |
 | `dangerBorder` / `dangerSurface` | `#f4a5a5` / `#fff5f5` | рамка и фон кнопки «Удалить урок» на форме урока |
-| `dangerMuted` | `#a03535` | красная подсказка в акцентной `NowCard` |
 | `warnBg` / `warnText` | `#fdf0c4` / `#92400e` | бейдж «Отменён», `BatteryHint` |
-| `success` | `#498d1c` | зелёный акцент текущего урока (`NowCard`) |
-| `warning` | `#cf9801` | подпись `NowCard` («Текущий / Следующий урок») |
-| `info` | `#056ccc` | класс и кабинет в `NowCard` |
+| `currentBg` / `currentText` / `currentDot` | `#dcfce7` / `#166534` / `#16a34a` | бейдж «Идёт сейчас», полоса прогресса `NowCard` |
+| `soonBg` / `soonText` / `soonDot` | `#fde68a` / `#713f12` / `#a16207` | бейдж «Скоро начнётся» в `NowCard` |
 | `barMuted` | `#cfd2e0` | полоса отменённого урока |
 | `transparent` | `transparent` | прозрачный фон `IconButton variant='ghost'` |
 | `overlay` | `rgba(0, 0, 0, 0.4)` | подложка `Modal` |

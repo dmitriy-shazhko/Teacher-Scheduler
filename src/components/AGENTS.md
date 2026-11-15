@@ -11,7 +11,8 @@
 | Компонент | Пропсы | Поведение |
 | --- | --- | --- |
 | `Screen.tsx` | `title`, `children`, `rightBlock?`, `onBack?` | Каркас экрана: фон `colors.bg`, поля 16, `paddingTop = insets.top + TOP_GAP` (28), заголовок 28 px bold. `rightBlock` — элемент справа от заголовка (обычно `IconButton`); `onBack` рисует над заголовком «‹ Назад» |
-| `LessonCard.tsx` | `lesson: Lesson` | Карточка урока строкой: колонка времени (начало 16 px bold, конец 12 px), цветная полоса слева, класс + `каб. N` (или «кабинет не указан»), тема, если есть. Нажатие — `openLesson(id)`, корзина `IconButton variant='danger'` — `confirmRemove(id)`. Отменённый: начало зачёркнуто, полоса `colors.barMuted`, бейдж «Отменён». `key` задаёт родитель |
+| `LessonCard.tsx` | `lesson: Lesson`, `passed?` | Карточка урока строкой: колонка времени (начало 16 px bold, конец 12 px), цветная полоса слева, класс + `каб. N` (или «кабинет не указан»), тема, если есть. Нажатие — `openLesson(id)`, корзина `IconButton variant='danger'` — `confirmRemove(id)`. Отменённый: начало зачёркнуто, полоса `colors.barMuted`, бейдж «Отменён». `passed` — урок уже прошёл: приглушённые время (muted), класс (`mutedStrong`) и полоса `barMuted`; «Неделя» ставит его в секции «Прошедшие уроки». `key` задаёт родитель |
+| `LessonSectionHeader.tsx` | `title`, `count`, `tone?: 'accent' \| 'muted' \| 'warn'` | Заголовок секции списка уроков (13 px bold) с бейджем-счётчиком справа. `accent` — `colors.primary`/`primaryTint`, `muted` — `mutedStrong`/`mutedTint`, `warn` — `warnText`/`warnBg`. Используется на «Неделе» («Активные / Прошедшие / Отменённые уроки») |
 | `NowCard.tsx` | `label`, `hint`, `lesson`, `accent?` | Крупная карточка текущего/следующего урока, нажатие — `openLesson`. `accent` — зелёная рамка/подпись `colors.success` |
 | `DayCard.tsx` | `name`, `day: Date`, `lessons: Lesson[]` | Легаси: заголовок «Понедельник, 5 окт», «＋» и список `LessonCard`. Экран «Неделя» им больше не пользуется (`DayStrip` + список выбранного дня); удалить, когда пропадёт последний потребитель |
 | `IconButton.tsx` | `icon`, `label`, `onPress`, `variant?: 'light' \| 'danger' \| 'primary' \| 'ghost'`, `size?: number` | Кнопка-иконка (Feather); `label` уходит в `accessibilityLabel`. `size` — сторона квадрата, по умолчанию 44; иконка = `round(size * 0.45)` (20 при 44), радиус масштабируется от 12/22. `light` — карточка + акцент, `danger` — красная на `dangerBg`, `primary` — белая на акценте, `ghost` — прозрачный фон (тот же квадрат, для иконок внутри карточек, `WeekSwitcher`). Использовать вместо самодельных `Pressable` с иконкой |
@@ -38,6 +39,7 @@
 | `card` | `#ffffff` | карточки, tab bar, окна `Modal` |
 | `text` | `#1a1a2e` | заголовки и основной текст |
 | `muted` | `#6b7088` | вторичный текст, подписи, пустые состояния |
+| `mutedStrong` / `mutedTint` | `#5b607a` / `#e4e6f5` | заголовок и бейдж секции «Прошедшие уроки» (`LessonSectionHeader`) |
 | `placeholder` | `#a9adc1` | подсказки незаполненных полей (`TextInput` на форме урока) — светлее `muted` |
 | `primary` | `#4f46e5` | акцент: кнопки, активная вкладка, полоса урока, ссылки |
 | `onPrimary` | `#ffffff` | текст/иконка на акцентном фоне |

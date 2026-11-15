@@ -8,10 +8,10 @@
 
 | Файл | Содержимое |
 | --- | --- |
-| `types.ts` | `Lesson`, `CopyLessonsSource`, `CurrentAndNextLessons`, `StatusKind`, `StatusStep`, `AppSettings`, `PermissionStatus` |
+| `types.ts` | `Lesson`, `CopyLessonsSource`, `CurrentAndNextLessons`, `DayLessonGroups`, `StatusKind`, `StatusStep`, `AppSettings`, `PermissionStatus` |
 | `constants.ts` | `WEEKDAYS`, `MONTHS`, `SCHEDULER_WINDOW_DAYS = 7`, `DEFAULT_SETTINGS`, `SETTING_OPTIONS`, `SETTING_LIMITS` |
 | `dates.ts` | Арифметика и форматирование дат/времени в локальном времени |
-| `schedule.ts` | `toMinutes`, `timeDiff`, `getCurrentAndNextLessons`, `getNextLessonOfDay`, `lessonIsPassed`, `formatDuration`, `sortDayLessons`, `dayTimeRange`, `weekLessonDays` |
+| `schedule.ts` | `toMinutes`, `timeDiff`, `getCurrentAndNextLessons`, `getNextLessonOfDay`, `lessonIsPassed`, `formatDuration`, `sortDayLessons`, `splitDayLessons`, `dayTimeRange`, `weekLessonDays` |
 | `notificationTexts.ts` | `buildEndingText`, `buildNextLessonText`, `buildCurrentLessonText` |
 | `statusTimeline.ts` | `buildStatusTimeline(lessons, now, settings)` → `StatusStep[]` |
 | `textFormaters.ts` | `pluralLessons(n)` — «1 урок / 2 урока / 5 уроков» |
@@ -90,7 +90,12 @@ interface AppSettings {
   (для точек в `DayStrip`). Отменённые тоже дают отметку, потому что остаются в списке дня.
 - `sortDayLessons(lessons)` — порядок списка дня: сначала активные уроки, отменённые —
   после них; внутри каждой группы по времени начала. Возвращает новый массив, входной не
-  мутирует. Используется на экране «Неделя».
+  мутирует. Сейчас экраном не используется (его заменил `splitDayLessons`), оставлен как
+  простой сортировщик для будущих списков.
+- `splitDayLessons(lessons, now)` → `{ active, passed, cancelled }` — деление уроков дня
+  на секции экрана «Неделя». Отменённые всегда в `cancelled`; урок дня в прошлом —
+  `passed`, дня в будущем — `active`; для сегодняшнего дня граница — `end <= now`
+  (`lessonIsPassed`). Внутри групп порядок по времени начала, входной массив не меняется.
 - `dayTimeRange(lessons)` → `{ start, end }` — самый ранний старт и самый поздний конец
   дня для сводки, порядок массива не важен; отменённые уроки учитываются. `null` для
   пустого списка.
@@ -172,6 +177,8 @@ export const colors = {
     card: '#ffffff',         // карточки, tab bar, поля ввода
     text: '#1a1a2e',         // заголовки и основной текст
     muted: '#6b7088',        // вторичный текст, подписи
+    mutedStrong: '#5b607a',  // заголовок секции «Прошедшие уроки»
+    mutedTint: '#e4e6f5',    // бейдж-счётчик «Прошедшие уроки»
     placeholder: '#a9adc1',  // подсказки пустых полей формы урока
     primary: '#4f46e5',      // акцент, активная вкладка, полоса урока
     onPrimary: '#ffffff',    // текст/иконка на акцентном фоне

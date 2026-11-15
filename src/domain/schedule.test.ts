@@ -5,6 +5,7 @@ import {
     getNextLessonOfDay,
     lessonIsPassed,
     sortDayLessons,
+    splitDayLessons,
     timeDiff,
     toMinutes,
     weekLessonDays,
@@ -273,6 +274,84 @@ describe('weekLessonDays', () => {
             false,
             false,
         ]);
+    });
+});
+
+describe('splitDayLessons', () => {
+    const early = makeLesson({ id: 1, startTime: '08:30', endTime: '09:15' });
+    const late = makeLesson({ id: 2, startTime: '10:15', endTime: '11:00' });
+
+    it('пустой список — все группы пустые', () => {
+        expect(splitDayLessons([], at(9, 0))).toEqual({ active: [], passed: [], cancelled: [] });
+    });
+
+    it.each([
+        ['до начала', at(8, 0), true],
+        ['посреди урока', at(8, 45), true],
+        ['за минуту до конца', at(9, 14), true],
+        ['ровно в момент конца', at(9, 15), false],
+        ['после урока', at(12, 0), false],
+    ])('сегодня, %s — урок активный: %s', (_title, now, isActive) => {
+        const result = splitDayLessons([early], now);
+
+        expect(result.active).toEqual(isActive ? [early] : []);
+        expect(result.passed).toEqual(isActive ? [] : [early]);
+    });
+
+    it('день в будущем — все неотменённые уроки активные', () => {
+        const tomorrow = makeLesson({ id: 3, date: '2026-10-06' });
+
+        const result = splitDayLessons([tomorrow], at(23, 0));
+
+        expect(result.active).toEqual([tomorrow]);
+        expect(result.passed).toEqual([]);
+    });
+
+    it('день в прошлом — все неотменённые уроки прошедшие', () => {
+        const yesterday = makeLesson({ id: 3, date: '2026-10-04' });
+
+        const result = splitDayLessons([yesterday], at(0, 1));
+
+        expect(result.active).toEqual([]);
+        expect(result.passed).toEqual([yesterday]);
+    });
+
+    it('отменённый урок всегда в отдельной группе, даже в будущем', () => {
+        const cancelled = makeLesson({ id: 4, date: '2026-10-06', cancelled: true });
+
+        const result = splitDayLessons([cancelled], at(9, 0));
+
+        expect(result.active).toEqual([]);
+        expect(result.passed).toEqual([]);
+        expect(result.cancelled).toEqual([cancelled]);
+    });
+
+    it('внутри каждой группы порядок по времени начала', () => {
+        const cancelledEarly = makeLesson({
+            id: 5,
+            startTime: '08:30',
+            endTime: '09:15',
+            cancelled: true,
+        });
+        const cancelledLate = makeLesson({
+            id: 6,
+            startTime: '10:15',
+            endTime: '11:00',
+            cancelled: true,
+        });
+
+        const result = splitDayLessons([cancelledLate, late, cancelledEarly, early], at(7, 0));
+
+        expect(result.active.map((l) => l.id)).toEqual([1, 2]);
+        expect(result.cancelled.map((l) => l.id)).toEqual([5, 6]);
+    });
+
+    it('входной массив не меняется', () => {
+        const lessons = [late, early];
+
+        splitDayLessons(lessons, at(7, 0));
+
+        expect(lessons).toEqual([late, early]);
     });
 });
 

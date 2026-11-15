@@ -1,6 +1,6 @@
 import { WEEKDAYS } from './constants';
 import { addDays, toDateString } from './dates';
-import { CurrentAndNextLessons, Lesson } from './types';
+import { CurrentAndNextLessons, DayLessonGroups, Lesson } from './types';
 
 export function toMinutes(time: string): number {
     const [h, m] = time.split(':').map(Number);
@@ -67,6 +67,35 @@ export function weekLessonDays(lessons: Lesson[], weekStart: Date): boolean[] {
     const dates = new Set(lessons.map((l) => l.date));
 
     return WEEKDAYS.map((_, i) => dates.has(toDateString(addDays(weekStart, i))));
+}
+
+// деление уроков дня на секции списка: отменённые — отдельно, остальные —
+// прошедшие и активные. День в прошлом прошедший целиком, день в будущем ещё не
+// начался, сегодняшний считается по границе end <= now. Внутри каждой группы —
+// порядок по времени начала; входной массив не меняется.
+export function splitDayLessons(lessons: Lesson[], now: Date): DayLessonGroups {
+    const today = toDateString(now);
+    const byStart = (a: Lesson, b: Lesson) => toMinutes(a.startTime) - toMinutes(b.startTime);
+
+    const active: Lesson[] = [];
+    const passed: Lesson[] = [];
+    const cancelled: Lesson[] = [];
+
+    for (const lesson of lessons) {
+        if (lesson.cancelled) {
+            cancelled.push(lesson);
+        } else if (lesson.date < today || (lesson.date === today && lessonIsPassed(lesson, now))) {
+            passed.push(lesson);
+        } else {
+            active.push(lesson);
+        }
+    }
+
+    return {
+        active: active.sort(byStart),
+        passed: passed.sort(byStart),
+        cancelled: cancelled.sort(byStart),
+    };
 }
 
 // порядок списка дня: сначала активные уроки, отменённые — после них;

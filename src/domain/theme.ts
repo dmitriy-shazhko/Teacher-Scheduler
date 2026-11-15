@@ -3,6 +3,8 @@ export const colors = {
     card: '#ffffff',
     text: '#1a1a2e',
     muted: '#6b7088',
+    mutedStrong: '#5b607a',
+    mutedTint: '#e4e6f5',
     placeholder: '#a9adc1',
     primary: '#4f46e5',
     onPrimary: '#ffffff',

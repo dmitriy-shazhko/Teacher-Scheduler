@@ -2,6 +2,7 @@ import { CopyLessonsModal } from '@/components/CopyLessonsModal';
 import { DayStrip } from '@/components/DayStrip';
 import { IconButton } from '@/components/IconButton';
 import { LessonCard } from '@/components/LessonCard';
+import { LessonSectionHeader, LessonSectionTone } from '@/components/LessonSectionHeader';
 import { Screen } from '@/components/Screen';
 import { WeekSwitcher } from '@/components/WeekSwitcher';
 import { countLessonsForWeek } from '@/db/lessons';
@@ -13,16 +14,23 @@ import {
     startOfWeek,
     toDateString,
 } from '@/domain/dates';
-import { dayTimeRange, sortDayLessons, weekLessonDays } from '@/domain/schedule';
+import { dayTimeRange, splitDayLessons, weekLessonDays } from '@/domain/schedule';
 import { pluralLessons } from '@/domain/textFormaters';
 import { colors } from '@/domain/theme';
-import { CopyLessonsSource } from '@/domain/types';
+import { CopyLessonsSource, Lesson } from '@/domain/types';
 import { useLessonActions } from '@/hooks/useLessonActions';
 import { useLessonStore } from '@/store/lessonsStore';
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, SectionList, StyleSheet, Text, View } from 'react-native';
+
+interface DaySection {
+    key: 'active' | 'passed' | 'cancelled';
+    title: string;
+    tone: LessonSectionTone;
+    data: Lesson[];
+}
 
 export default function WeekScreen() {
     const db = useSQLiteContext();
@@ -35,20 +43,29 @@ export default function WeekScreen() {
     const [copyOpen, setCopyOpen] = useState(false);
     const [sources, setSources] = useState<CopyLessonsSource[]>([]);
     const [isCopying, setIsCopying] = useState(false);
+    const [now, setNow] = useState(() => new Date());
     const [selected, setSelected] = useState(() =>
         Math.min((new Date().getDay() + 6) % 7, WEEKDAYS.length - 1),
     );
-    const todayStr = toDateString(new Date());
+    const todayStr = toDateString(now);
     const todayIndex = WEEKDAYS.findIndex(
         (_, i) => toDateString(addDays(weekStart, i)) === todayStr,
     );
-    const isCurrentWeek = toDateString(weekStart) === toDateString(startOfWeek(new Date()));
+    const isCurrentWeek = toDateString(weekStart) === toDateString(startOfWeek(now));
 
     const day = addDays(weekStart, selected);
     const dayStr = toDateString(day);
-    const dayLessons = sortDayLessons(lessons.filter((l) => l.date === dayStr));
+    const dayLessons = lessons.filter((l) => l.date === dayStr);
     const dayRange = dayTimeRange(dayLessons);
     const hasLessonsByDay = weekLessonDays(lessons, weekStart);
+
+    const { active, passed, cancelled } = splitDayLessons(dayLessons, now);
+    const allSections: DaySection[] = [
+        { key: 'active', title: 'Активные уроки', tone: 'accent', data: active },
+        { key: 'passed', title: 'Прошедшие уроки', tone: 'muted', data: passed },
+        { key: 'cancelled', title: 'Отменённые уроки', tone: 'warn', data: cancelled },
+    ];
+    const sections = allSections.filter((s) => s.data.length > 0);
 
     const summary = dayRange
         ? `${pluralLessons(dayLessons.length)} · ${dayRange.start} – ${dayRange.end}`
@@ -107,6 +124,20 @@ export default function WeekScreen() {
     useFocusEffect(
         useCallback(() => {
             load();
+
+            // минута сменилась — пересчитываем «прошедшие/активные»;
+            // смена суток тоже приходит этим обновлением
+            const clock = setInterval(() => {
+                const current = new Date();
+
+                setNow((prev) =>
+                    Math.floor(current.getTime() / 60_000) === Math.floor(prev.getTime() / 60_000)
+                        ? prev
+                        : current,
+                );
+            }, 1000);
+
+            return () => clearInterval(clock);
         }, [load]),
     );
 
@@ -146,13 +177,28 @@ export default function WeekScreen() {
                 />
             </View>
 
-            <ScrollView contentContainerStyle={styles.list}>
+            <View style={styles.listBox}>
                 {dayLessons.length === 0 ? (
                     <Text style={styles.empty}>В этот день уроков нет</Text>
                 ) : (
-                    dayLessons.map((l) => <LessonCard key={l.id} lesson={l} />)
+                    <SectionList
+                        sections={sections}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item, section }) => (
+                            <LessonCard lesson={item} passed={section.key === 'passed'} />
+                        )}
+                        renderSectionHeader={({ section }) => (
+                            <LessonSectionHeader
+                                title={section.title}
+                                count={section.data.length}
+                                tone={section.tone}
+                            />
+                        )}
+                        stickySectionHeadersEnabled={false}
+                        contentContainerStyle={styles.list}
+                    />
                 )}
-            </ScrollView>
+            </View>
 
             <CopyLessonsModal
                 targetWeekStart={weekStart}
@@ -176,6 +222,7 @@ const styles = StyleSheet.create({
     },
     dayTitle: { fontSize: 17, fontWeight: '700', color: colors.text },
     daySub: { fontSize: 12, color: colors.muted, marginTop: 2 },
+    listBox: { flex: 1 },
     list: { paddingBottom: 16 },
     empty: { color: colors.muted, textAlign: 'center', marginTop: 24 },
 });

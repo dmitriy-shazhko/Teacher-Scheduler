@@ -21,6 +21,12 @@ export interface CurrentAndNextLessons {
     minutesToNext: number | null;
 }
 
+export interface DayLessonGroups {
+    active: Lesson[];
+    passed: Lesson[];
+    cancelled: Lesson[];
+}
+
 export type StatusKind = 'upcoming' | 'current' | 'ending';
 
 export type StatusStep = {

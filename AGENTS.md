@@ -130,7 +130,8 @@ test/           jest globalSetup, helpers, общие тесты
 UI-редизайн: палитра в `src/domain/theme.ts`, компоненты `IconButton`, `DayStrip`,
 `WeekSwitcher`; «Неделя» показывает выбранный день, «＋» создаёт урок на этот день;
 `LessonCard` — новая карточка с корзиной (удаление с любой вкладки); `Screen` получил
-`rightBlock` и `onBack`.
+`rightBlock` и `onBack`. Список дня на «Неделе» разбит на секции «Активные / Прошедшие /
+Отменённые уроки» (`LessonSectionHeader` + `splitDayLessons`).
 
 Дальше по порядку: **T4** — тесты БД на `better-sqlite3` (или `sql.js`/`node:sqlite`);
 **T5** — тесты планировщика/стора с моками и `syncNotifications(db, now?)`; затем баги

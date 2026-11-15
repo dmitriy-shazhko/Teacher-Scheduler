@@ -7,12 +7,12 @@ import { IconButton } from './IconButton';
 
 interface Props {
     lesson: Lesson;
-    /** Урок уже прошёл: карточка приглушена (секция «Прошедшие уроки»). */
     passed?: boolean;
 }
 
 export function LessonCard({ lesson, passed = false }: Props) {
     const { openLesson, confirmRemove } = useLessonActions();
+    const dimmed = passed || lesson.cancelled;
     const onDelete = () => {
         confirmRemove(lesson.id);
     };
@@ -26,7 +26,7 @@ export function LessonCard({ lesson, passed = false }: Props) {
                 <Text
                     style={[
                         styles.start,
-                        passed && styles.startPassed,
+                        dimmed && styles.startDimmed,
                         lesson.cancelled && styles.struck,
                     ]}
                 >
@@ -35,10 +35,10 @@ export function LessonCard({ lesson, passed = false }: Props) {
                 <Text style={styles.end}>{lesson.endTime}</Text>
             </View>
 
-            <View style={[styles.bar, (passed || lesson.cancelled) && styles.barMuted]} />
+            <View style={[styles.bar, dimmed && styles.barMuted]} />
 
             <View style={styles.body}>
-                <Text style={[styles.title, passed && styles.titlePassed]}>
+                <Text style={[styles.title, dimmed && styles.titleDimmed]}>
                     {lesson.className} · {lesson.room ? `каб. ${lesson.room}` : 'кабинет не указан'}
                 </Text>
                 {!!lesson.topic && <Text style={styles.topic}>{lesson.topic}</Text>}
@@ -66,14 +66,14 @@ const styles = StyleSheet.create({
     },
     times: { width: 54, alignItems: 'center' },
     start: { fontSize: 16, fontWeight: '800', color: colors.text },
-    startPassed: { color: colors.muted },
+    startDimmed: { color: colors.muted },
     struck: { textDecorationLine: 'line-through', color: colors.muted },
     end: { fontSize: 12, color: colors.muted },
     bar: { width: 3, alignSelf: 'stretch', borderRadius: 2, backgroundColor: colors.primary },
     barMuted: { backgroundColor: colors.barMuted },
     body: { flex: 1 },
     title: { fontSize: 15, fontWeight: '700', color: colors.text },
-    titlePassed: { color: colors.mutedStrong },
+    titleDimmed: { color: colors.mutedStrong },
     topic: { fontSize: 13, color: colors.muted, marginTop: 2 },
     badge: {
         alignSelf: 'flex-start',

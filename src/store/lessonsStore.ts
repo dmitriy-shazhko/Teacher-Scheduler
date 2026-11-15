@@ -16,17 +16,19 @@ type State = {
     lessons: Lesson[];
     todayLessons: Lesson[];
     loadWeek: (db: SQLiteDatabase, weekStart: Date) => Promise<void>;
-    loadToday: (db: SQLiteDatabase) => Promise<void>;
+    loadToday: (db: SQLiteDatabase, now?: Date) => Promise<void>;
     removeLesson: (db: SQLiteDatabase, id: number) => Promise<void>;
     saveLesson: (db: SQLiteDatabase, id: number | null, data: Omit<Lesson, 'id'>) => Promise<void>;
     copyWeek: (db: SQLiteDatabase, source: Date, target: Date) => Promise<string[]>;
 };
 
 export const useLessonStore = create<State>((set, get) => {
-    const refresh = async (db: SQLiteDatabase) => {
+    let weekRequestId = 0;
+
+    const refresh = async (db: SQLiteDatabase, now = new Date()) => {
         const { weekStart } = get();
         if (weekStart) await get().loadWeek(db, weekStart);
-        await get().loadToday(db);
+        await get().loadToday(db, now);
         syncNotifications(db).catch((e) => console.warn('syncNotifications failed', e));
     };
 
@@ -36,13 +38,17 @@ export const useLessonStore = create<State>((set, get) => {
         todayLessons: [],
 
         loadWeek: async (db, weekStart) => {
+            const requestId = ++weekRequestId;
             const lessons = await getLessonsForWeek(db, weekStart);
+
+            // пока ждали БД, могли запросить другую неделю — её ответ и оставляем
+            if (requestId !== weekRequestId) return;
 
             set({ weekStart, lessons });
         },
 
-        loadToday: async (db) => {
-            const todayLessons = await getLessonsForDate(db, new Date());
+        loadToday: async (db, now = new Date()) => {
+            const todayLessons = await getLessonsForDate(db, now);
 
             set({ todayLessons });
         },

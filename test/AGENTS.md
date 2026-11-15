@@ -69,9 +69,11 @@ module.exports = {
   `withTransactionAsync`) в `test/helpers/`. Запасные варианты: `sql.js`, `node:sqlite`.
   Проверять миграции (пустая база + повторный запуск), CRUD, границы диапазона, `copyWeek`
   (сдвиг, перенос отменённых с флагом, темы, откат транзакции), `deleteLesson`.
-- T5 (план): тесты планировщика и стора с моками; сценарий бага №4 (падение
-  `createTriggerNotification` после отмены старых триггеров), очередь синхронизаций,
-  `timeoutAfter`, уникальные `id`.
+- T5 (частично готово): `src/store/lessonsStore.test.ts` — гонка `loadWeek` (ответы в
+  обратном порядке), `loadToday(now)`, `refresh` после `saveLesson` (неделя, «сегодня»,
+  `syncNotifications`). Осталось: планировщик с моками `react-native-notify-kit`; сценарий
+  бага №4 (падение `createTriggerNotification` после отмены старых триггеров), очередь
+  синхронизаций, `timeoutAfter`, уникальные `id`.
 - Не покрыто тестами: реальная доставка уведомлений, каналы, вибрация, батарея,
   компоненты (RNTL можно добавить позже), E2E (Maestro/Detox пока не нужны).
 

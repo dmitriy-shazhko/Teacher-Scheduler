@@ -11,6 +11,7 @@ import {
     addDays,
     formatWeek,
     nearestWeekdayIndex,
+    parseDate,
     startOfWeek,
     toDateString,
 } from '@/domain/dates';
@@ -23,7 +24,7 @@ import { useNow } from '@/hooks/useNow';
 import { useLessonStore } from '@/store/lessonsStore';
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, SectionList, StyleSheet, Text, View } from 'react-native';
 
 interface DaySection {
@@ -37,6 +38,7 @@ export default function WeekScreen() {
     const db = useSQLiteContext();
     const loadWeek = useLessonStore((s) => s.loadWeek);
     const lessons = useLessonStore((s) => s.lessons);
+    const storeWeekStart = useLessonStore((s) => s.weekStart);
     const copyWeek = useLessonStore((s) => s.copyWeek);
     const { addLesson } = useLessonActions();
 
@@ -54,11 +56,16 @@ export default function WeekScreen() {
     );
     const isCurrentWeek = toDateString(weekStart) === toDateString(startOfWeek(now));
 
+    // в сторе могут лежать уроки другой недели, пока новая ещё грузится
+    const isWeekLoaded =
+        storeWeekStart !== null && toDateString(storeWeekStart) === toDateString(weekStart);
+    const weekLessons = isWeekLoaded ? lessons : [];
+
     const day = addDays(weekStart, selected);
     const dayStr = toDateString(day);
-    const dayLessons = lessons.filter((l) => l.date === dayStr);
+    const dayLessons = weekLessons.filter((l) => l.date === dayStr);
     const dayRange = dayTimeRange(dayLessons);
-    const hasLessonsByDay = weekLessonDays(lessons, weekStart);
+    const hasLessonsByDay = weekLessonDays(weekLessons, weekStart);
 
     const { active, passed, cancelled } = splitDayLessons(dayLessons, now);
     const allSections: DaySection[] = [
@@ -74,8 +81,11 @@ export default function WeekScreen() {
 
     const load = useCallback(() => loadWeek(db, weekStart), [db, weekStart, loadWeek]);
 
+    const currentWeekKey = toDateString(startOfWeek(now));
+    const prevCurrentWeekKey = useRef(currentWeekKey);
+
     const shiftWeek = (n: number) => setWeekStart(addDays(weekStart, 7 * n));
-    const setCurrentWeek = () => setWeekStart(startOfWeek(new Date()));
+    const setCurrentWeek = () => setWeekStart(startOfWeek(now));
 
     const openCopy = async () => {
         const found: CopyLessonsSource[] = [];
@@ -128,6 +138,15 @@ export default function WeekScreen() {
             load();
         }, [load]),
     );
+
+    useEffect(() => {
+        if (prevCurrentWeekKey.current === currentWeekKey) return;
+
+        const wasOnCurrentWeek = toDateString(weekStart) === prevCurrentWeekKey.current;
+        prevCurrentWeekKey.current = currentWeekKey;
+
+        if (wasOnCurrentWeek) setWeekStart(parseDate(currentWeekKey));
+    }, [currentWeekKey, weekStart]);
 
     return (
         <Screen

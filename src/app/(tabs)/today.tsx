@@ -2,7 +2,7 @@ import { LessonCard } from '@/components/LessonCard';
 import { LessonSectionHeader, LessonSectionTone } from '@/components/LessonSectionHeader';
 import { NowCard } from '@/components/NowCard';
 import { Screen } from '@/components/Screen';
-import { formatDateFull, toDateString } from '@/domain/dates';
+import { formatDateFull, parseDate, toDateString } from '@/domain/dates';
 import {
     formatDuration,
     getCurrentAndNextLessons,
@@ -75,7 +75,8 @@ export default function TodayScreen() {
         if (loadedDay.current === today) return;
 
         loadedDay.current = today;
-        loadToday(db);
+        // грузим именно тот день, который показан в заголовке, а не «сейчас» из стора
+        loadToday(db, parseDate(today));
     }, [db, loadToday, today]);
 
     return (

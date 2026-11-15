@@ -205,7 +205,7 @@ export const colors = {
     soonText: '#713f12',     // бейдж «Скоро начнётся», текст
     soonDot: '#a16207',      // точка бейджа «Скоро начнётся»
     barMuted: '#cfd2e0',     // полоса отменённого урока
-    transparent: 'transparent', // прозрачный фон (IconButton variant='ghost')
+    transparent: 'transparent', // прозрачный фон (IconButton variant='ghost', ripple табов)
     overlay: 'rgba(0, 0, 0, 0.4)', // подложка Modal
 };
 ```

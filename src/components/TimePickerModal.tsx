@@ -56,7 +56,6 @@ export function TimePickerModal({ startTime, endTime, defaultDuration, onApply, 
     });
 
     const duration = timeDiff(draftStart, draftEnd);
-    // кнопки: варианты из настроек + дефолт и длительность урока, если их там нет
     const initialDuration = timeDiff(startTime, endTime);
     const durationOptions = Array.from(new Set([...DURATIONS, defaultDuration, initialDuration]))
         .filter((value) => value > 0)

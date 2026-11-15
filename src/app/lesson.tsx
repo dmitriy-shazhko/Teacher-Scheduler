@@ -1,4 +1,3 @@
-import { Feather } from '@expo/vector-icons';
 import { FormCard } from '@/components/FormCard';
 import { FormRow } from '@/components/FormRow';
 import { PickerField } from '@/components/PickerField';
@@ -10,6 +9,7 @@ import { colors } from '@/domain/theme';
 import { useLessonActions } from '@/hooks/useLessonActions';
 import { useLessonStore } from '@/store/lessonsStore';
 import { useSettingsStore } from '@/store/settingsStore';
+import { Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
@@ -42,7 +42,6 @@ export default function LessonFormScreen() {
     const [isSaving, setIsSaving] = useState(false);
     const [isTimeOpen, setIsTimeOpen] = useState(false);
 
-    // при редактировании подгружаем урок из базы
     useEffect(() => {
         if (!isEdit) return;
         (async () => {

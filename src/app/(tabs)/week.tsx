@@ -76,7 +76,6 @@ export default function WeekScreen() {
     const shiftWeek = (n: number) => setWeekStart(addDays(weekStart, 7 * n));
     const setCurrentWeek = () => setWeekStart(startOfWeek(new Date()));
 
-    // окно копирования: ищем предыдущие 8 недель, где есть уроки
     const openCopy = async () => {
         const found: CopyLessonsSource[] = [];
         for (let i = 1; i <= 8; i++) {
@@ -94,7 +93,7 @@ export default function WeekScreen() {
         try {
             const copiedDates = await copyWeek(db, source, weekStart);
             setCopyOpen(false);
-            // показываем день, где появились уроки, ближайший к сегодняшнему
+
             const nearest = nearestWeekdayIndex(copiedDates, new Date());
             if (nearest >= 0) setSelected(nearest);
         } finally {

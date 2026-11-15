@@ -13,7 +13,6 @@ interface Props {
     isLast?: boolean;
 }
 
-// общий вызов системного Android-пикера (дата на форме урока, время — в TimePickerModal)
 export function openDateTimePicker(
     mode: 'date' | 'time',
     value: Date,

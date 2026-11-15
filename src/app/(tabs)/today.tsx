@@ -41,7 +41,6 @@ export default function TodayScreen() {
     const mainMinutes = current ? minutesLeft : minutesToNext;
     const mainProgress = current ? lessonProgress(current, now) : 0;
 
-    // будущие уроки после карточки: первый — «Следующий», остальные — «Позже»
     const upcoming = sortDayLessons(
         lessons.filter((l) => !l.cancelled && !lessonIsPassed(l, now) && l.id !== main?.id),
     );

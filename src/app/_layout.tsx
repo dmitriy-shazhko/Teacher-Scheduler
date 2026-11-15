@@ -23,7 +23,6 @@ export default function RootLayout() {
     useEffect(() => {
         initNotifications();
         useSettingsStore.getState().loadSettings();
-        //useSettingsStore.getState().updateSettings({lessonDurationMinutes: 90})
     }, []);
 
     return (

@@ -1,4 +1,5 @@
 import { colors } from '@/domain/theme';
+import { TabBarButton } from '@/components/TabBarButton';
 import { useNotificationSync } from '@/hooks/useNotificationSync';
 import { Feather } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
@@ -10,6 +11,7 @@ export default function TabsLayout() {
         <Tabs
             screenOptions={{
                 headerShown: false, // заголовок рисует ваш Screen
+                tabBarButton: TabBarButton,
                 tabBarActiveTintColor: colors.primary,
                 tabBarInactiveTintColor: colors.muted,
                 tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },

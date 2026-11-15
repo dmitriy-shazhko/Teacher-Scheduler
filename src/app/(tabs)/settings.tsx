@@ -44,7 +44,6 @@ export default function SettingsScreen() {
                 syncNotifications(db).catch((e) => console.warn('syncNotifications failed', e));
             }
         } else if (status === 'blocked') {
-            // системный запрос больше не покажется, только ручное включение
             Linking.openSettings();
         }
     };

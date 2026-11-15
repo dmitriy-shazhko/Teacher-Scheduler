@@ -10,8 +10,6 @@ interface Props {
     tone?: LessonSectionTone;
 }
 
-// цвета заголовка и счётчика по смыслу секции: активные — акцент,
-// прошедшие — приглушённые, отменённые — красные (как в макете week)
 const TONES: Record<LessonSectionTone, { text: string; badge: string }> = {
     accent: { text: colors.primary, badge: colors.primaryTint },
     muted: { text: colors.mutedStrong, badge: colors.mutedTint },

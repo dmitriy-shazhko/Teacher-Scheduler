@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | `_layout.tsx` | — | Корневой layout: `SQLiteProvider databaseName='schedule.db' onInit={migrateDb}` вокруг `Stack` (`headerShown: false`), `initNotifications()`, загрузка настроек, `setNotificationHandler` |
 | `index.tsx` | `/` | `<Redirect href='/(tabs)/today' />` |
-| `(tabs)/_layout.tsx` | — | Нижние вкладки «Сегодня / Неделя / Настройки» (иконки Feather, цвета из `colors`), `useNotificationSync()` |
+| `(tabs)/_layout.tsx` | — | Нижние вкладки «Сегодня / Неделя / Настройки» (иконки Feather, цвета из `colors`, `tabBarButton: TabBarButton`), `useNotificationSync()` |
 | `(tabs)/today.tsx` | `/today` | Текущий/следующий урок, секции дня |
 | `(tabs)/week.tsx` | `/week` | Неделя, копирование |
 | `(tabs)/settings.tsx` | `/settings` | Настройки |
@@ -19,6 +19,9 @@
 - `index.tsx` обязателен: dev-клиент открывает приложение по `scheduler:///`, и без
   маршрута `/` появляется «Unmatched Route».
 - `unstable_settings = { initialRouteName: '(tabs)' }` в корневом layout.
+- `tabBarButton: TabBarButton` в `screenOptions` — свой `Pressable` без стандартного
+  Android-риппла (серый круг при нажатии на вкладку). Кнопка живёт в
+  `src/components/TabBarButton.tsx`.
 - Типы маршрутов генерируются при старте dev-сервера: после добавления экрана
   перезапустить `npx expo start --dev-client -c`.
 - Импортировать `Link`, `router`, `useLocalSearchParams`, `useFocusEffect` из

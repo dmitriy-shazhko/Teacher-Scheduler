@@ -6,7 +6,6 @@ interface Props {
     label: string;
     children: ReactNode;
     isLast?: boolean;
-    // подпись сверху, значение под ней (для многострочной «Темы»)
     isBlock?: boolean;
     onPress?: () => void;
 }

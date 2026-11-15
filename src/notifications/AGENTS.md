@@ -39,6 +39,16 @@
 - Старые каналы (`status-v1`, `ending-soon-v1/v2`, `next-lesson`, `kit-test*`) могут
   остаться на телефоне; удаление — вручную через `notifee.deleteChannel`, не критично.
 - Создание каналов только для Android (`Platform.OS === 'android'`).
+- **Иконка в статус-баре** — `android.smallIcon: 'ic_notification'` (константа `SMALL_ICON`
+  в `scheduler.ts`). Drawable генерирует плагин `react-native-notify-kit`
+  (`app.json` → `android.icons`) из `assets/images/notification-icon.png`: белый силуэт
+  на прозрачном фоне, потому что Android сам тонирует маленькую иконку. Если ресурс не
+  найден, библиотека молча падает на иконку приложения — при «белом квадрате» в
+  статус-баре проверять имя ресурса и что сборка новая.
+- Иконки ассетов (`android-icon-foreground/monochrome`, `notification-icon`) рисует
+  `scripts/generate-icons.py` из `assets/icon.png`; после замены исходника их нужно
+  перегенерировать. Иконка приложения и drawable — нативщина: изменения видны
+  **только в новой development-сборке** (APK), не по JS.
 
 ## Разрешения (`permissions.ts`)
 
@@ -78,6 +88,7 @@
 - `showChronometer: true`, `chronometerDirection: 'down'`, `timestamp`: начало урока для
   `upcoming`, конец урока для `current`/`ending` (системный обратный отсчёт `мм:сс`).
 - Канал: `ending` → `CHANNELS.endingSoon`, остальные → `CHANNELS.status`.
+- Маленькая иконка: `smallIcon: 'ic_notification'` (см. «Каналы»).
 - `textFor`: `current` → `buildCurrentLessonText`, `ending` → `buildEndingText`,
   `upcoming` → `buildNextLessonText(step.lesson)`.
 

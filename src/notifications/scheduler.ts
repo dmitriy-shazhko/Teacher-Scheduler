@@ -18,6 +18,9 @@ import { CHANNELS } from './channels';
 
 let lastSync: Promise<void> = Promise.resolve();
 
+// Имя drawable, который генерирует плагин react-native-notify-kit из app.json (android.icons)
+const SMALL_ICON = 'ic_notification';
+
 function textFor(step: StatusStep): NotificationText {
     if (step.kind === 'current') return buildCurrentLessonText(step.lesson);
     if (step.kind === 'ending') return buildEndingText(step.lesson.endTime);
@@ -41,6 +44,7 @@ function toNotification(step: StatusStep, timeoutMs: number) {
         body: text.body,
         android: {
             channelId: step.kind === 'ending' ? CHANNELS.endingSoon : CHANNELS.status,
+            smallIcon: SMALL_ICON,
             visibility: AndroidVisibility.PUBLIC,
             onlyAlertOnce: true,
             timeoutAfter: timeoutMs,

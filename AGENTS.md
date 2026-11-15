@@ -136,6 +136,12 @@ UI-редизайн: палитра в `src/domain/theme.ts`, компонент
 («Идёт сейчас» с прогрессом или «Скоро начнётся»), ниже — «Следующий / Позже»; прошедшие
 и отменённые уроки на этой вкладке не показываются.
 
+Иконки: `assets/icon.png` — иконка приложения (`app.json` → `icon`) и источник для
+слоёв адаптивной иконки и маленькой иконки уведомления. Их рисует
+`scripts/generate-icons.py` в `assets/images/` (`android-icon-foreground/monochrome`,
+`notification-icon`); плагин `react-native-notify-kit` (`android.icons`) превращает
+последнюю в drawable `ic_notification`, её и указывает `scheduler.ts` в `smallIcon`.
+
 Дальше по порядку: **T4** — тесты БД на `better-sqlite3` (или `sql.js`/`node:sqlite`);
 **T5** — тесты планировщика/стора с моками и `syncNotifications(db, now?)`; затем баги
 №1 (ending длиннее урока), №2 (пересечения), №4 (пересборка после отмены), №5 (гонка
